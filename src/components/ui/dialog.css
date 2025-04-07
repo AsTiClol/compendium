@@ -1,0 +1,105 @@
+.fixedOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  
+  .dialogContent {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    z-index: 50;
+    display: grid;
+    width: 100%;
+    max-width: 32rem;
+    transform: translate(-50%, -50%);
+    gap: 1rem;
+    border: 1px solid;
+    background-color: #ffffff; 
+    padding: 1.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-radius: 0; 
+  }
+  
+  @media (min-width: 640px) {
+    .dialogContent {
+      border-radius: 0.5rem;
+    }
+  }
+  
+  
+  .dialogCloseButton {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    border-radius: 0.125rem;
+    opacity: 0.7;
+    transition-property: opacity;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+    background-color: transparent; 
+    color: inherit; 
+  }
+  
+  .dialogCloseButton:hover {
+    opacity: 1;
+  }
+  
+  .dialogCloseButton:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    border-width: 2px;
+    border-style: solid;
+    
+  }
+  
+  .dialogCloseButton:disabled {
+    pointer-events: none;
+  }
+  
+  [data-state="open"] > .dialogCloseButton {
+    background-color: #cccccc; 
+    color: #888888; 
+  }
+  
+  
+  .dialogHeader {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.375rem;
+    text-align: center;
+  }
+  
+  @media (min-width: 640px) {
+    .dialogHeader {
+      text-align: left;
+    }
+  }
+  
+  .dialogFooter {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  
+  @media (min-width: 640px) {
+    .dialogFooter {
+      flex-direction: row;
+      justify-content: flex-end;
+      column-gap: 0.5rem;
+    }
+  }
+  
+  
+  .dialogTitle {
+    font-size: 1.125rem;
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+  
+  .dialogDescription {
+    font-size: 0.875rem;
+    color: #888888; 
+  }
+  

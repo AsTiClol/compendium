@@ -1,0 +1,29 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background-color: #1a1a1a; /* Dark background */
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table th, .table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  color: #fff; /* White text */
+  border-bottom: 1px solid #333; /* Subtle border */
+}
+
+.table th {
+  background-color: #2a2a2a; /* Slightly darker for header */
+  font-weight: 600;
+}
+
+.table tr:hover {
+  background-color: #333; /* Highlight row on hover */
+}
+
+.table .no-results {
+  text-align: center;
+  color: #888; /* Grey text for no results */
+}

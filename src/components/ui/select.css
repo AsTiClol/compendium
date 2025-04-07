@@ -1,0 +1,38 @@
+.select-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #444; /* Subtle border */
+  border-radius: 8px;
+  background-color: #1a1a1a; /* Dark background */
+  color: #fff; /* White text */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  font-family: 'IBM Plex Mono', monospace;
+  cursor: pointer;
+}
+
+.select-trigger:focus {
+  border-color: #8182ed; /* Accent color on focus */
+  box-shadow: 0 0 0 3px rgba(129, 130, 237, 0.3); /* Focus ring */
+  outline: none;
+}
+
+.select-content {
+  background-color: #1a1a1a; /* Dark background */
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.select-item {
+  padding: 0.75rem 1rem;
+  color: #fff; /* White text */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.select-item:hover {
+  background-color: #333; /* Highlight item on hover */
+}

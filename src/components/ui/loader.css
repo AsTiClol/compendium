@@ -1,0 +1,13 @@
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height */
+  background-color: #000; /* Black background */
+}
+
+.loader {
+  color: #8182ed; /* Accent color */
+  font-size: 1.5rem;
+  font-weight: bold;
+} 

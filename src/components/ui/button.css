@@ -1,0 +1,46 @@
+/* Define the animation for the border */
+@keyframes borderEffect {
+  0% { border-color: #8182ed; }
+  50% { border-color: #8182ed; }
+  100% { border-color: #8182ed; }
+}
+
+.button {
+  /* Base styles */
+  background-color: #000; /* Black background */
+  color: #fff; /* White text for contrast */
+  border: 1px solid transparent; /* Thinner border */
+  border-radius: 9999px; /* Fully rounded */
+  padding: 0.5rem 1rem; /* Smaller padding */
+  font-size: 0.875rem; /* Smaller font size */
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  overflow: hidden;
+  margin-right: 0.5rem; /* Add margin for spacing between buttons */
+
+  /* Border animation */
+  animation: borderEffect 3s linear infinite; /* Apply border animation */
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(129, 130, 237, 0.4); /* Focus ring with accent color */
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  border-color: #555; /* Grey border for disabled state */
+  animation: none; /* Stop animation */
+}
