@@ -1,865 +1,1237 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Link as ScrollLink, Element } from 'react-scroll';
-import { 
-  Search, ChevronDown, CheckCircle, Star, 
-  MessageCircle, ArrowRight, Menu, X, Spotlight
-} from 'lucide-react';
+"use client"
+
+import { useState, useEffect, useRef } from "react"
+import { motion, useScroll, useTransform, useSpring, useInView } from "framer-motion"
+import { Link } from "react-scroll"
+import { useNavigate } from "react-router-dom"
+
+// Typewriter component
+const Typewriter = ({ text, className }) => {
+  const [displayText, setDisplayText] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (currentIndex < text.length) {
+      const timeout = setTimeout(() => {
+        setDisplayText(prev => prev + text[currentIndex]);
+        setCurrentIndex(prev => prev + 1);
+      }, 50);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [currentIndex, text]);
+
+  return (
+    <motion.h2 
+      className={className}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      {displayText}
+      <motion.span
+        animate={{ opacity: [0, 1, 0] }}
+        transition={{ repeat: Infinity, duration: 1 }}
+      >
+        |
+      </motion.span>
+    </motion.h2>
+  );
+};
 
 const LandingPage = () => {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [selectedFaq, setSelectedFaq] = useState(null);
-  const [activeTestimonial, setActiveTestimonial] = useState(0);
-  
-  // Handle scroll events for navbar
+  const navigate = useNavigate()
+  const [isScrolled, setIsScrolled] = useState(false)
+  const { scrollYProgress } = useScroll({
+    offset: ["start start", "end start"],
+    layoutEffect: false
+  })
+
+  const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0], {
+    clamp: false
+  })
+  const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.9], {
+    clamp: false
+  })
+  const y = useTransform(scrollYProgress, [0, 0.2], [0, -50], {
+    clamp: false
+  })
+
+  // Smooth scroll tracer
+  const scroller = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+    mass: 0.5
+  })
+
+  // Handle navbar background change on scroll
   useEffect(() => {
     const handleScroll = () => {
-      const isScrolled = window.scrollY > 10;
-      if (isScrolled !== scrolled) {
-        setScrolled(isScrolled);
+      if (window.scrollY > 50) {
+        setIsScrolled(true)
+      } else {
+        setIsScrolled(false)
       }
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [scrolled]);
-  
-  // Auto-rotate testimonials
+    }
+
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  // Reset scroll position on mount
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveTestimonial((prev) => 
-        prev === testimonials.length - 1 ? 0 : prev + 1
-      );
-    }, 5000);
-    
-    return () => clearInterval(interval);
-  }, []);
+    window.scrollTo(0, 0)
+  }, [])
 
-  // Handle FAQ toggle
-  const toggleFaq = (index) => {
-    setSelectedFaq(selectedFaq === index ? null : index);
-  };
+  // FAQ accordion state
+  const [activeIndex, setActiveIndex] = useState(null)
 
-  // Animation variants
-  const fadeIn = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 }
-    }
-  };
-  
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2
-      }
-    }
-  };
-  
-  const navLinks = [
-    { title: "Home", to: "home" },
-    { title: "About", to: "about" },
-    { title: "Features", to: "features" },
-    { title: "Testimonials", to: "testimonials" },
-    { title: "Pricing", to: "pricing" },
-    { title: "FAQs", to: "faqs" },
-    { title: "Contact", to: "contact" },
-  ];
-  
+  const toggleAccordion = (index) => {
+    setActiveIndex(activeIndex === index ? null : index)
+  }
+
+  // Features data
   const features = [
     {
-      icon: <Search size={24} />,
-      title: "AI-Powered Search",
-      description: "Intelligent search that understands context and learns from user behavior"
+      title: "User-Driven Link Addition",
+      description: "Empower your community to contribute knowledge with our simple link-sharing system.",
+      icon: (
+        <svg
+          className="w-10 h-10"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+          />
+        </svg>
+      ),
     },
     {
-      icon: <CheckCircle size={24} />,
-      title: "User-Driven Links",
-      description: "Easy addition and organization of links by your entire community"
+      title: "Smart Filters and Search",
+      description: "Organize and filter content by tags, categories, and custom attributes for quick access.",
+      icon: (
+        <svg
+          className="w-10 h-10"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+          />
+        </svg>
+      ),
     },
     {
-      icon: <Star size={24} />,
-      title: "Smart Filters",
-      description: "Advanced filtering and tagging system for quick information retrieval"
+      title: "AI-Powered Contextual Search",
+      description:
+        "Find exactly what you need with our intelligent RAG-based search that understands context and relevance.",
+      icon: (
+        <svg
+          className="w-10 h-10"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+      ),
     },
-  ];
-  
+    {
+      title: "Centralized Clean Dashboard",
+      description: "Access all your community's shared knowledge in one beautifully designed, intuitive interface.",
+      icon: (
+        <svg
+          className="w-10 h-10"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+          />
+        </svg>
+      ),
+    },
+  ]
+
+  // Add avatar generation function
+  const getAvatar = (name) => {
+    const colors = ['#6366f1', '#8b5cf6', '#d946ef', '#ec4899', '#f43f5e', '#f97316', '#eab308', '#22c55e', '#3b82f6'];
+    const initials = name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+    
+    const colorIndex = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length;
+    
+    return {
+      initials,
+      color: colors[colorIndex]
+    };
+  };
+
+  // Update testimonials data to include avatars
   const testimonials = [
     {
-      name: "Sarah Johnson",
-      role: "Community Manager",
-      content: "Compendium has transformed how our team shares knowledge. What used to take hours now takes seconds.",
-      avatar: "https://i.pravatar.cc/150?img=1"
+      name: "Priya R.",
+      title: "Community Manager",
+      text: "This solved our biggest community pain point.",
+      avatar: getAvatar("Priya R.")
     },
     {
-      name: "Mark Reynolds",
-      role: "Development Lead",
-      content: "The search functionality is incredible. It's like having a dedicated librarian for all our shared resources.",
-      avatar: "https://i.pravatar.cc/150?img=2"
+      name: "Rajat K.",
+      title: "Product Lead",
+      text: "The AI search is mind-blowing.",
+      avatar: getAvatar("Rajat K.")
     },
     {
-      name: "Priya Sharma",
-      role: "Product Owner",
-      content: "We've reduced onboarding time by 60% by using Compendium as our central knowledge repository.",
-      avatar: "https://i.pravatar.cc/150?img=3"
+      name: "Anjali S.",
+      title: "Team Lead",
+      text: "No more scrolling through chats.",
+      avatar: getAvatar("Anjali S.")
     },
-  ];
-  
+    {
+      name: "Kunal V.",
+      title: "Developer",
+      text: "Love the interface!",
+      avatar: getAvatar("Kunal V.")
+    },
+    {
+      name: "Rhea M.",
+      title: "Content Creator",
+      text: "Organizing links has never been easier.",
+      avatar: getAvatar("Rhea M.")
+    },
+    {
+      name: "Mohit J.",
+      title: "UX Designer",
+      text: "Beautifully executed platform.",
+      avatar: getAvatar("Mohit J.")
+    }
+  ]
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "Can I use Compendium for personal use?",
+      answer:
+        "While Compendium was designed with communities in mind, many individuals use it to organize their own collection of links and resources.",
+    },
+    {
+      question: "Is there a mobile version?",
+      answer:
+        "Yes, Compendium is fully responsive and works on all devices. We also have native mobile apps for iOS and Android for an even better mobile experience.",
+    },
+    {
+      question: "What powers the AI search?",
+      answer:
+        "Our search is powered by a custom-built Retrieval Augmented Generation (RAG) system that understands the context of your query and retrieves the most relevant links from your collection.",
+    },
+    {
+      question: "Can I import old links?",
+      answer:
+        "Yes! Compendium allows you to bulk import links from various sources including browser bookmarks, spreadsheets, and even directly from chat platforms like WhatsApp and Telegram.",
+    },
+  ]
+
+  // Pricing plans
   const pricingPlans = [
     {
       name: "Free",
       price: "₹0",
       period: "forever",
-      features: [
-        "Up to 5 team members",
-        "100 shared links",
-        "Basic search",
-        "7-day history"
-      ],
+      features: ["Up to 500 links", "Basic search", "3 team members", "Community support"],
       cta: "Get Started",
-      popular: false
+      popular: false,
     },
     {
       name: "Pro",
       price: "₹299",
       period: "per month",
       features: [
+        "Unlimited links",
+        "AI-powered search",
         "Up to 20 team members",
-        "Unlimited shared links",
-        "Advanced AI search",
-        "90-day history",
-        "Analytics dashboard"
+        "Priority support",
+        "Advanced analytics",
       ],
       cta: "Start Free Trial",
-      popular: true
+      popular: true,
     },
     {
       name: "Enterprise",
       price: "Custom",
-      period: "per month",
+      period: "pricing",
       features: [
-        "Unlimited team members",
-        "Unlimited shared links",
-        "Advanced AI search",
-        "Unlimited history",
+        "Unlimited everything",
+        "Dedicated support",
         "Custom integrations",
-        "Dedicated support"
+        "SSO & advanced security",
+        "SLA guarantees",
       ],
       cta: "Contact Sales",
-      popular: false
-    }
-  ];
-  
-  const faqs = [
-    {
-      question: "How does Compendium organize links?",
-      answer: "Compendium uses AI-powered categorization and tagging to automatically organize links. You can also create custom categories and apply tags manually."
+      popular: false,
     },
-    {
-      question: "Can I integrate Compendium with other tools?",
-      answer: "Yes! Compendium offers integrations with popular tools like Slack, Teams, Notion, and more. Enterprise plans include custom integration options."
-    },
-    {
-      question: "Is there a limit to how many links I can save?",
-      answer: "Free accounts can save up to 100 links. Pro and Enterprise accounts have unlimited link storage."
-    },
-    {
-      question: "How secure is my data with Compendium?",
-      answer: "Compendium uses bank-level encryption for all data. We also offer enterprise-grade security features like SSO and role-based access control."
-    },
-  ];
+  ]
 
+  // Animation variants
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+  }
+
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+      },
+    },
+  }
+
+  // Refs for section animations
+  const heroRef = useRef(null)
+  const aboutRef = useRef(null)
+  const featuresRef = useRef(null)
+  const testimonialsRef = useRef(null)
+  const pricingRef = useRef(null)
+  const faqRef = useRef(null)
+  const forumRef = useRef(null)
+  const contactRef = useRef(null)
+
+  const heroInView = useInView(heroRef, { once: true, amount: 0.3 })
+  const aboutInView = useInView(aboutRef, { once: true, amount: 0.3 })
+  const featuresInView = useInView(featuresRef, { once: true, amount: 0.3 })
+  const testimonialsInView = useInView(testimonialsRef, { once: true, amount: 0.3 })
+  const pricingInView = useInView(pricingRef, { once: true, amount: 0.3 })
+  const faqInView = useInView(faqRef, { once: true, amount: 0.3 })
+  const forumInView = useInView(forumRef, { once: true, amount: 0.3 })
+  const contactInView = useInView(contactRef, { once: true, amount: 0.3 })
+
+  // Update forum topics data to include avatars
+  const forumTopics = [
+    {
+      title: "Getting Started with Compendium",
+      author: "Priya Sharma",
+      replies: 24,
+      lastActivity: "2 hours ago",
+      category: "Guides",
+      content: "I'm new to Compendium and would love to hear some tips on how to get started. What features should I explore first?",
+      avatar: getAvatar("Priya Sharma"),
+      repliesList: [
+        {
+          author: "Arjun Patel",
+          time: "1 hour ago",
+          content: "Welcome! I'd recommend starting with the link organization features. They're super intuitive and will help you get the most out of Compendium right away.",
+          likes: 12,
+          avatar: getAvatar("Arjun Patel")
+        },
+        {
+          author: "Meera Desai",
+          time: "45 minutes ago",
+          content: "Don't forget to check out the AI search feature - it's a game changer for finding specific content in your collection.",
+          likes: 8,
+          avatar: getAvatar("Meera Desai")
+        }
+      ]
+    },
+    {
+      title: "Best Practices for Link Organization",
+      author: "Rahul Verma",
+      replies: 18,
+      lastActivity: "5 hours ago",
+      category: "Tips & Tricks",
+      content: "What's everyone's favorite way to organize their links? Looking for some inspiration!",
+      repliesList: [
+        {
+          author: "Ananya Singh",
+          time: "4 hours ago",
+          content: "I use a combination of tags and categories. Tags for quick filtering, categories for broader organization.",
+          likes: 15,
+          avatar: getAvatar("Ananya Singh")
+        },
+        {
+          author: "Vikram Reddy",
+          time: "3 hours ago",
+          content: "I create custom collections for different projects. Makes it easy to share with team members.",
+          likes: 9,
+          avatar: getAvatar("Vikram Reddy")
+        }
+      ]
+    },
+    {
+      title: "AI Search Feature Discussion",
+      author: "Neha Kapoor",
+      replies: 32,
+      lastActivity: "1 day ago",
+      category: "Features",
+      content: "The new AI search is amazing! How is everyone using it?",
+      repliesList: [
+        {
+          author: "Aditya Kumar",
+          time: "20 hours ago",
+          content: "I use it to find old resources I've saved but can't remember the exact title of. Saves so much time!",
+          likes: 21,
+          avatar: getAvatar("Aditya Kumar")
+        },
+        {
+          author: "Ishaan Malhotra",
+          time: "18 hours ago",
+          content: "The contextual understanding is impressive. It finds related content I didn't even know I had.",
+          likes: 17,
+          avatar: getAvatar("Ishaan Malhotra")
+        }
+      ]
+    }
+  ]
+
+  const [expandedTopic, setExpandedTopic] = useState(null);
+  const [newReplies, setNewReplies] = useState({});
+  const [replyInputs, setReplyInputs] = useState({});
+
+  const toggleTopic = (index) => {
+    setExpandedTopic(expandedTopic === index ? null : index);
+  };
+
+  const handleReplyChange = (topicIndex, value) => {
+    setReplyInputs(prev => ({
+      ...prev,
+      [topicIndex]: value
+    }));
+  };
+
+  const handleAddReply = (topicIndex) => {
+    if (!replyInputs[topicIndex]?.trim()) return;
+
+    const userName = localStorage.getItem('userName') || 'Anonymous';
+
+    const newReply = {
+      author: userName,
+      time: "Just now",
+      content: replyInputs[topicIndex],
+      likes: 0,
+      avatar: getAvatar(userName)
+    };
+
+    setNewReplies(prev => ({
+      ...prev,
+      [topicIndex]: [...(prev[topicIndex] || []), newReply]
+    }));
+
+    setReplyInputs(prev => ({
+      ...prev,
+      [topicIndex]: ""
+    }));
+  };
+
+  const handleViewProduct = () => {
+    navigate('/home')
+  }
+
+  // Update the testimonials section JSX
   return (
-    <div
-      className="relative flex min-h-screen w-full overflow-hidden bg-[#0f0f0f] text-white antialiased"
-      style={{ backgroundSize: '40px 40px', backgroundImage: 'linear-gradient(to right, #171717 1px, transparent 1px), linear-gradient(to bottom, #171717 1px, transparent 1px)' }}
-    >
-      <Spotlight className="-top-40 left-0 md:-top-20 md:left-60" fill="white" />
+    <div className="bg-transparent text-white min-h-screen font-['IBM_Plex_Mono',monospace]">
+      {/* Grid Background */}
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#080808] via-[#0a0a0a] to-[#080808]"></div>
+        <div className="absolute inset-0 opacity-[0.1]">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `linear-gradient(#ffffff 0.5px, transparent 0.5px), linear-gradient(90deg, #ffffff 0.5px, transparent 0.5px)`,
+              backgroundSize: "25px 25px",
+            }}
+          ></div>
+        </div>
+      </div>
+
+      {/* Scroll Tracer */}
+      <motion.div
+        className="fixed left-4 top-0 bottom-0 w-1 origin-top z-50"
+        style={{ 
+          scaleY: scroller,
+          background: 'linear-gradient(to bottom, #6366f1, #8b5cf6, #d946ef)',
+          opacity: 0.5
+        }}
+      >
+        <motion.div 
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-gradient-to-r from-[#6366f1] via-[#8b5cf6] to-[#d946ef] shadow-[0_0_20px_8px_rgba(99,102,241,0.3)]"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.5, 1, 0.5],
+            boxShadow: [
+              "0 0 20px 8px rgba(99,102,241,0.3)",
+              "0 0 30px 12px rgba(139,92,246,0.4)",
+              "0 0 20px 8px rgba(99,102,241,0.3)"
+            ]
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          <motion.div
+            className="absolute inset-0 rounded-full"
+            animate={{
+              scale: [1, 1.5, 1],
+              opacity: [0.3, 0, 0.3],
+              background: "radial-gradient(circle, rgba(99,102,241,0.5) 0%, rgba(139,92,246,0) 70%)"
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.5
+            }}
+          />
+        </motion.div>
+      </motion.div>
+
+      {/* Main Content */}
+      <div className="relative z-10">
       {/* Navbar */}
-      <header 
+        <nav
         className={`fixed w-full z-50 transition-all duration-300 ${
-          scrolled ? 'py-3 bg-[#0f0f0f]/80 backdrop-blur-lg shadow-lg' : 'py-5'
+            isScrolled ? "bg-black/20 backdrop-blur-lg shadow-lg" : "bg-transparent"
         }`}
       >
-        <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
+          <div className="container mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <img src="/compendium.png" alt="Compendium Logo" className="h-8" />
-            <span className="ml-3 text-xl font-bold text-[#9b5de5]">Compendium</span>
+                <img 
+                  src="/compendium-transparent.png" 
+                  alt="Compendium" 
+                  className="h-12 w-auto"
+                />
           </div>
-          
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <ScrollLink
-                key={link.to}
-                to={link.to}
+              <div className="hidden md:flex items-center space-x-8">
+                <Link
+                  to="home"
                 spy={true}
                 smooth={true}
                 duration={500}
-                className="text-sm font-medium hover:text-[#9b5de5] cursor-pointer transition-colors"
-              >
-                {link.title}
-              </ScrollLink>
-            ))}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-5 py-2 rounded-full bg-[#9b5de5] text-white font-medium shadow-[0_0_15px_rgba(155,93,229,0.5)] hover:shadow-[0_0_20px_rgba(155,93,229,0.7)] transition-all"
-            >
-              View Our Product
-            </motion.button>
-          </nav>
-          
-          {/* Mobile Menu Toggle */}
-          <button
-            className="md:hidden text-white"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-        
-        {/* Mobile Navigation */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-[#0f0f0f]/95 backdrop-blur-lg"
-            >
-              <div className="container mx-auto px-4 py-4 flex flex-col space-y-4">
-                {navLinks.map((link) => (
-                  <ScrollLink
-                    key={link.to}
-                    to={link.to}
+                  className="text-white hover:text-[#8483ec] cursor-pointer transition-colors"
+                >
+                  Home
+                </Link>
+                <Link
+                  to="about"
+                  spy={true}
+                  smooth={true}
+                  duration={500}
+                  className="text-white hover:text-[#8483ec] cursor-pointer transition-colors"
+                >
+                  About Us
+                </Link>
+                <Link
+                  to="testimonials"
+                  spy={true}
+                  smooth={true}
+                  duration={500}
+                  className="text-white hover:text-[#8483ec] cursor-pointer transition-colors"
+                >
+                  Testimonials
+                </Link>
+                <Link
+                  to="pricing"
+                  spy={true}
+                  smooth={true}
+                  duration={500}
+                  className="text-white hover:text-[#8483ec] cursor-pointer transition-colors"
+                >
+                  Pricing
+                </Link>
+                <Link
+                  to="faq"
                     spy={true}
                     smooth={true}
                     duration={500}
-                    className="text-sm font-medium hover:text-[#9b5de5] cursor-pointer transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {link.title}
-                  </ScrollLink>
-                ))}
+                  className="text-white hover:text-[#8483ec] cursor-pointer transition-colors"
+                >
+                  FAQs
+                </Link>
+                <Link
+                  to="forum"
+                  spy={true}
+                  smooth={true}
+                  duration={500}
+                  className="text-white hover:text-[#8483ec] cursor-pointer transition-colors"
+                >
+                  Discussion Forum
+                </Link>
+                <Link
+                  to="contact"
+                  spy={true}
+                  smooth={true}
+                  duration={500}
+                  className="text-white hover:text-[#8483ec] cursor-pointer transition-colors"
+                >
+                  Contact Us
+                </Link>
+              </div>
+              <div>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-5 py-2 rounded-full bg-[#9b5de5] text-white font-medium shadow-[0_0_15px_rgba(155,93,229,0.5)] hover:shadow-[0_0_20px_rgba(155,93,229,0.7)] transition-all"
+                  onClick={() => navigate('/home')}
+                  className="bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] px-6 py-2 rounded-full font-medium shadow-[0_0_15px_rgba(99,102,241,0.5)] hover:shadow-[0_0_25px_rgba(139,92,246,0.7)] transition-shadow text-white"
                 >
                   View Our Product
                 </motion.button>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </header>
+            </div>
+          </div>
+        </nav>
 
       {/* Hero Section */}
-      <Element name="home" className="relative">
-        <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
-          {/* Parallax Background Elements */}
+        <section ref={heroRef} className="relative h-screen flex items-center justify-center overflow-hidden">
+          {/* Animated background elements */}
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.6 }}
-            transition={{ duration: 1 }}
-            className="absolute top-0 right-0 w-1/2 h-full"
+            className="absolute inset-0 z-0"
             style={{ 
-              background: 'radial-gradient(circle, rgba(155,93,229,0.15) 0%, rgba(155,93,229,0) 70%)',
+              y: useTransform(scrollYProgress, [0, 1], [0, -100])
             }}
-          />
+          >
+            {/* Floating gradients */}
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.4 }}
-            transition={{ duration: 1, delay: 0.3 }}
-            className="absolute bottom-0 left-0 w-1/2 h-1/2"
+              animate={{
+                x: [0, 10, 0],
+                y: [0, -15, 0],
+                opacity: [0.4, 0.6, 0.4],
+              }}
+              transition={{ repeat: Number.POSITIVE_INFINITY, duration: 8, ease: "easeInOut" }}
+              className="absolute top-1/4 left-1/4 w-[400px] h-[400px] rounded-full bg-gradient-to-r from-[#6366f1]/20 to-[#d946ef]/20 blur-3xl"
+            ></motion.div>
+            <motion.div
+              animate={{
+                x: [0, -20, 0],
+                y: [0, 20, 0],
+                opacity: [0.3, 0.5, 0.3],
+              }}
+              transition={{ repeat: Number.POSITIVE_INFINITY, duration: 10, ease: "easeInOut", delay: 1 }}
+              className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-gradient-to-r from-[#8b5cf6]/20 to-[#6366f1]/20 blur-3xl"
+            ></motion.div>
+
+            {/* Grid lines */}
+            <div
+              className="absolute inset-0 opacity-[0.03]"
             style={{ 
-              background: 'radial-gradient(circle, rgba(155,93,229,0.1) 0%, rgba(155,93,229,0) 70%)',
+                backgroundImage: `linear-gradient(#ffffff 0.5px, transparent 0.5px), linear-gradient(90deg, #ffffff 0.5px, transparent 0.5px)`,
+                backgroundSize: "25px 25px",
             }}
-          />
+            ></div>
+          </motion.div>
           
-          {/* Hero Content */}
-          <div className="container mx-auto px-4 pt-20 pb-12 md:pt-32 md:pb-20 relative z-10">
-            <div className="max-w-4xl mx-auto text-center">
               <motion.div
-                initial="hidden"
-                animate="visible"
-                variants={fadeIn}
-              >
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6">
-                  Where Shared Links <br/>
-                  <span className="text-[#9b5de5]">Live Forever</span>
-                </h1>
-              </motion.div>
-              
+            style={{ 
+              opacity, 
+              scale, 
+              y,
+              x: useTransform(scrollYProgress, [0, 1], [0, 100])
+            }} 
+            className="container mx-auto px-6 z-10 text-center"
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="max-w-4xl mx-auto"
+            >
+              <Typewriter text="Where Shared Links Live Forever" className="text-5xl md:text-7xl font-bold mb-6 leading-tight tracking-tight text-left" />
               <motion.p 
-                className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto"
+                className="text-xl md:text-2xl text-gray-300 mb-10 max-w-3xl ml-0"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.6 }}
+                transition={{ duration: 0.8, delay: 1 }}
               >
                 Compendium helps communities organize and retrieve shared knowledge with ease.
               </motion.p>
-              
               <motion.div
-                className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4"
+                className="flex flex-col sm:flex-row justify-center gap-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.6 }}
+                transition={{ duration: 0.8, delay: 1.2 }}
               >
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-8 py-3 rounded-full bg-[#9b5de5] text-white font-medium shadow-[0_0_20px_rgba(155,93,229,0.5)] hover:shadow-[0_0_30px_rgba(155,93,229,0.7)] transition-all"
+                  className="bg-[#8483ec] px-8 py-4 rounded-full text-lg font-medium shadow-[0_0_20px_rgba(132,131,236,0.5)] hover:shadow-[0_0_30px_rgba(132,131,236,0.7)] transition-shadow"
                 >
-                  Get Started Free
+                  Get Started For Free
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-8 py-3 rounded-full border border-[#9b5de5]/50 text-white font-medium hover:bg-[#9b5de5]/10 transition-all"
+                  onClick={handleViewProduct}
+                  className="bg-transparent border-2 border-white px-8 py-4 rounded-full text-lg font-medium hover:bg-white/10 transition-colors"
                 >
-                  Watch Demo
+                  View Our Product
                 </motion.button>
+              </motion.div>
+            </motion.div>
               </motion.div>
               
-              <motion.div
-                className="mt-16 md:mt-24"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8, duration: 1 }}
-              >
-                <motion.img
-                  src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&q=80&w=1000"
-                  alt="Compendium Dashboard"
-                  className="rounded-lg shadow-2xl w-full max-w-4xl mx-auto"
-                  style={{ 
-                    boxShadow: '0 20px 50px rgba(155, 93, 229, 0.2)'
-                  }}
-                  whileHover={{ y: -5 }}
-                  transition={{ duration: 0.3 }}
-                />
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10">
+            <Link to="about" spy={true} smooth={true} duration={500} className="cursor-pointer">
+              <motion.div animate={{ y: [0, 10, 0] }} transition={{ repeat: Number.POSITIVE_INFINITY, duration: 1.5 }}>
+                <svg
+                  className="w-10 h-10 text-white/70"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
               </motion.div>
+            </Link>
             </div>
-          </div>
-        </div>
-      </Element>
+        </section>
       
       {/* About Section */}
-      <Element name="about" className="py-20 md:py-28">
-        <div className="container mx-auto px-4">
+        <section ref={aboutRef} className="py-20 relative">
           <motion.div
+            variants={fadeInUp}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={fadeIn}
-            className="max-w-3xl mx-auto text-center"
+            animate={aboutInView ? "visible" : "hidden"}
+            className="max-w-4xl mx-auto px-6 text-center"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Knowledge Management <span className="text-[#9b5de5]">Reimagined</span>
+            <h2 className="text-4xl font-bold mb-6">
+              Built for <span className="text-[#8483ec]">Communities</span>, by a{" "}
+              <span className="text-[#8483ec]">Community</span>
             </h2>
-            <p className="text-gray-300 mb-12 text-lg">
-              Compendium is the modern way to collect, organize, and retrieve shared links and knowledge. 
-              No more lost bookmarks or forgotten resources - everything your team needs is just a search away.
+            <p className="text-xl text-gray-300 mb-10 leading-relaxed max-w-3xl mx-auto">
+              Compendium was born out of a simple problem faced in every WhatsApp or online group—shared links get lost
+              in endless chats. We built a centralized tool that stores, categorizes, and intelligently retrieves links
+              so knowledge never gets buried again.
             </p>
           </motion.div>
-          
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={staggerContainer}
-          >
-            <motion.div variants={fadeIn}>
-              <h3 className="text-xl md:text-2xl font-bold mb-4">Built for <span className="text-[#9b5de5]">Teams and Communities</span></h3>
-              <p className="text-gray-300 mb-6">
-                Whether you're a small team or large organization, Compendium scales with your needs.
-                Create spaces for different teams, projects, or interests - all with powerful
-                search capabilities.
-              </p>
-              <ul className="space-y-2">
-                {[
-                  "Shareable link collections",
-                  "Real-time collaboration",
-                  "Customizable organization",
-                  "Powerful access controls"
-                ].map((item, index) => (
-                  <li key={index} className="flex items-center">
-                    <CheckCircle size={18} className="text-[#9b5de5] mr-2" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-            
-            <motion.div
-              variants={fadeIn}
-              className="relative"
-            >
-              <div 
-                className="absolute inset-0 rounded-lg opacity-30"
-                style={{
-                  background: 'linear-gradient(45deg, #9b5de5 0%, #6d28d9 100%)',
-                  filter: 'blur(40px)',
-                  transform: 'translate(10px, 10px)'
-                }}
-              />
-              <img
-                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800"
-                alt="Team collaboration"
-                className="rounded-lg relative z-10"
-              />
-            </motion.div>
-          </motion.div>
-        </div>
-      </Element>
+        </section>
       
       {/* Features Section */}
-      <Element name="features" className="py-20 md:py-28 bg-[#151515]">
-        <div className="container mx-auto px-4">
+        <section ref={featuresRef} className="py-20 relative">
           <motion.div
+            variants={fadeInUp}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={fadeIn}
-            className="text-center max-w-3xl mx-auto"
+            animate={featuresInView ? "visible" : "hidden"}
+            className="mb-16 px-6 text-center"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">
-              Powerful <span className="text-[#9b5de5]">Features</span>
+            <h2 className="text-4xl font-bold mb-6">
+              Powerful <span className="text-[#8483ec]">Features</span>
             </h2>
-            <p className="text-gray-300 mb-16">
-              Everything you need to manage your team's knowledge in one place
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Compendium comes packed with tools designed to make knowledge sharing and retrieval effortless.
             </p>
           </motion.div>
           
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
+            className="grid md:grid-cols-2 gap-10"
             variants={staggerContainer}
+            initial="hidden"
+            animate={featuresInView ? "visible" : "hidden"}
           >
             {features.map((feature, index) => (
               <motion.div
                 key={index}
-                className="bg-[#1a1a1a] rounded-xl p-6 border border-[#333333] hover:border-[#9b5de5]/50 transition-all"
-                variants={fadeIn}
-                whileHover={{ 
-                  y: -5,
-                  boxShadow: '0 10px 30px rgba(155, 93, 229, 0.15)'
-                }}
+                variants={fadeInUp}
+                whileHover={{ y: -10, boxShadow: "0 0 30px rgba(132, 131, 236, 0.3)" }}
+                className="bg-[#0f0f0f] p-8 rounded-2xl border border-[#8483ec]/20 transition-all duration-300"
               >
-                <div className="bg-[#9b5de5]/10 p-3 rounded-full w-12 h-12 flex items-center justify-center text-[#9b5de5] mb-5">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
-                <p className="text-gray-400">{feature.description}</p>
+                <div className="text-[#8483ec] mb-4">{feature.icon}</div>
+                <h3 className="text-2xl font-bold mb-4">{feature.title}</h3>
+                <p className="text-gray-300">{feature.description}</p>
               </motion.div>
             ))}
           </motion.div>
-          
-          <motion.div
-            className="mt-20 text-center"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={fadeIn}
-          >
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-3 rounded-full border border-[#9b5de5] text-white font-medium hover:bg-[#9b5de5]/10 transition-all"
-            >
-              Explore All Features <ArrowRight size={16} className="ml-2 inline" />
-            </motion.button>
-          </motion.div>
-        </div>
-      </Element>
+        </section>
       
       {/* Testimonials Section */}
-      <Element name="testimonials" className="py-20 md:py-28">
-        <div className="container mx-auto px-4">
+        <section ref={testimonialsRef} className="py-20 relative overflow-hidden">
           <motion.div
-            className="text-center max-w-3xl mx-auto mb-16"
+            variants={fadeInUp}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={fadeIn}
+            animate={testimonialsInView ? "visible" : "hidden"}
+            className="mb-16 px-6 text-center"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">
-              Loved by <span className="text-[#9b5de5]">Teams</span>
+            <h2 className="text-4xl font-bold mb-6">
+              What Our <span className="text-[#8483ec]">Users Say</span>
             </h2>
-            <p className="text-gray-300">
-              Don't take our word for it - hear from teams already using Compendium
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Don't just take our word for it. Here's what people are saying about Compendium.
             </p>
           </motion.div>
           
-          <div className="max-w-4xl mx-auto">
-            <div className="relative">
-              {/* Testimonials Carousel */}
-              <div className="overflow-hidden">
-                <div className="flex transition-all duration-500" style={{ transform: `translateX(-${activeTestimonial * 100}%)` }}>
-                  {testimonials.map((testimonial, index) => (
-                    <div key={index} className="min-w-full px-4">
-                      <div className="bg-[#1a1a1a] rounded-xl p-8 border border-[#333333]">
-                        <div className="flex items-center mb-6">
-                          <img
-                            src={testimonial.avatar}
-                            alt={testimonial.name}
-                            className="w-14 h-14 rounded-full border-2 border-[#9b5de5]"
-                          />
-                          <div className="ml-4">
-                            <h4 className="font-bold text-lg">{testimonial.name}</h4>
-                            <p className="text-gray-400 text-sm">{testimonial.role}</p>
+          <motion.div
+            className="flex gap-6 py-10 overflow-visible"
+            animate={{ x: ["0%", "-100%"] }}
+            transition={{
+              repeat: Number.POSITIVE_INFINITY,
+              repeatType: "loop",
+              duration: 30,
+              ease: "linear",
+            }}
+          >
+            {[...testimonials, ...testimonials].map((testimonial, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ y: -10, scale: 1.03 }}
+                className="min-w-[350px] bg-[#0f0f0f]/40 backdrop-blur-lg p-8 rounded-2xl border border-[#8483ec]/20 flex flex-col"
+              >
+                <div className="flex-1">
+                  <p className="text-xl italic text-gray-300 mb-6">"{testimonial.text}"</p>
                           </div>
+                <div>
+                  <h4 className="text-lg font-bold">{testimonial.name}</h4>
+                  <p className="text-[#8483ec]">{testimonial.title}</p>
                         </div>
-                        <p className="text-gray-300 italic">{testimonial.content}</p>
-                        <div className="mt-5 flex">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Star key={star} size={18} className="text-[#9b5de5]" fill="#9b5de5" />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Dots navigation */}
-              <div className="flex justify-center mt-8 space-x-2">
-                {testimonials.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setActiveTestimonial(index)}
-                    className={`w-3 h-3 rounded-full transition-all ${
-                      activeTestimonial === index ? 'bg-[#9b5de5]' : 'bg-gray-600'
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </Element>
+              </motion.div>
+            ))}
+          </motion.div>
+        </section>
       
       {/* Pricing Section */}
-      <Element name="pricing" className="py-20 md:py-28 bg-[#151515]">
-        <div className="container mx-auto px-4">
+        <section ref={pricingRef} className="py-20 relative">
           <motion.div
-            className="text-center max-w-3xl mx-auto mb-16"
+            variants={fadeInUp}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={fadeIn}
+            animate={pricingInView ? "visible" : "hidden"}
+            className="mb-16 px-6 text-center"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">
-              Simple, <span className="text-[#9b5de5]">Transparent</span> Pricing
+            <h2 className="text-4xl font-bold mb-6">
+              Simple <span className="text-[#8483ec]">Pricing</span>
             </h2>
-            <p className="text-gray-300">
-              Choose the plan that works for your team
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Choose the plan that works best for your team. All plans include core features.
             </p>
           </motion.div>
           
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
+            className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto"
             variants={staggerContainer}
+            initial="hidden"
+            animate={pricingInView ? "visible" : "hidden"}
           >
             {pricingPlans.map((plan, index) => (
               <motion.div
                 key={index}
-                className={`bg-[#1a1a1a] rounded-xl p-8 border relative ${
+                variants={fadeInUp}
+                whileHover={{ y: -10 }}
+                className={`bg-[#0f0f0f] rounded-2xl overflow-hidden ${
                   plan.popular 
-                    ? 'border-[#9b5de5]' 
-                    : 'border-[#333333]'
+                    ? "border-2 border-[#8483ec] shadow-[0_0_30px_rgba(132,131,236,0.3)]"
+                    : "border border-[#8483ec]/20"
                 }`}
-                variants={fadeIn}
-                whileHover={{ 
-                  y: -5,
-                  boxShadow: plan.popular 
-                    ? '0 10px 30px rgba(155, 93, 229, 0.3)' 
-                    : '0 10px 30px rgba(155, 93, 229, 0.1)'
-                }}
               >
-                {plan.popular && (
-                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    <span className="bg-[#9b5de5] text-white text-xs font-bold py-1 px-3 rounded-full">
-                      MOST POPULAR
-                    </span>
-                  </div>
-                )}
-                <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
+                {plan.popular && <div className="bg-[#8483ec] text-center py-2 font-medium">Most Popular</div>}
+                <div className="p-8">
+                  <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
                 <div className="mb-6">
-                  <span className="text-3xl font-bold">{plan.price}</span>
-                  <span className="text-gray-400 text-sm">{plan.period}</span>
+                    <span className="text-4xl font-bold">{plan.price}</span>
+                    <span className="text-gray-400">/{plan.period}</span>
                 </div>
-                
-                <ul className="space-y-3 mb-8">
+                  <ul className="mb-8 space-y-4">
                   {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-start">
-                      <CheckCircle size={18} className="text-[#9b5de5] mr-2 mt-1 flex-shrink-0" />
+                      <li key={i} className="flex items-center">
+                        <svg
+                          className="w-5 h-5 text-[#8483ec] mr-3"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
                       <span className="text-gray-300">{feature}</span>
                     </li>
                   ))}
                 </ul>
-                
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`w-full py-3 rounded-lg font-medium transition-all ${
-                    plan.popular
-                      ? 'bg-[#9b5de5] text-white'
-                      : 'bg-[#2a2a2a] text-white hover:bg-[#9b5de5]/20'
+                    className={`w-full py-3 rounded-lg font-medium ${
+                      plan.popular ? "bg-[#8483ec] text-white" : "bg-white/10 text-white hover:bg-white/20"
                   }`}
                 >
                   {plan.cta}
                 </motion.button>
+                </div>
               </motion.div>
             ))}
           </motion.div>
-        </div>
-      </Element>
+        </section>
       
       {/* FAQ Section */}
-      <Element name="faqs" className="py-20 md:py-28">
-        <div className="container mx-auto px-4">
+        <section ref={faqRef} className="py-20 relative">
           <motion.div
-            className="text-center max-w-3xl mx-auto mb-16"
+            variants={fadeInUp}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={fadeIn}
+            animate={faqInView ? "visible" : "hidden"}
+            className="mb-16 px-6 text-center"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">
-              Frequently Asked <span className="text-[#9b5de5]">Questions</span>
+            <h2 className="text-4xl font-bold mb-6">
+              Frequently Asked <span className="text-[#8483ec]">Questions</span>
             </h2>
-            <p className="text-gray-300">
-              Get answers to common questions about Compendium
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Got questions? We've got answers. If you don't see what you're looking for, reach out to our team.
             </p>
           </motion.div>
           
-          <motion.div
-            className="max-w-3xl mx-auto"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={staggerContainer}
-          >
+          <div className="max-w-3xl mx-auto">
             {faqs.map((faq, index) => (
               <motion.div
                 key={index}
-                className="mb-5"
-                variants={fadeIn}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="mb-4"
               >
                 <button
-                  onClick={() => toggleFaq(index)}
-                  className={`w-full text-left p-5 rounded-lg flex justify-between items-center ${
-                    selectedFaq === index
-                      ? 'bg-[#1a1a1a] border-l-2 border-[#9b5de5]'
-                      : 'bg-[#151515] hover:bg-[#1a1a1a]'
-                  }`}
+                  onClick={() => toggleAccordion(index)}
+                  className={`flex justify-between items-center w-full p-5 text-left bg-[#0f0f0f] rounded-lg ${
+                    activeIndex === index ? "rounded-b-none border-b border-[#8483ec]/30" : ""
+                  } border border-[#8483ec]/20`}
                 >
-                  <span className="font-medium text-lg">{faq.question}</span>
-                  <ChevronDown 
-                    size={20} 
-                    className={`transform transition-transform ${
-                      selectedFaq === index ? 'rotate-180' : ''
-                    }`}
-                  />
+                  <span className="text-lg font-medium">{faq.question}</span>
+                  <svg
+                    className={`w-6 h-6 text-[#8483ec] transition-transform ${activeIndex === index ? "transform rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
                 </button>
-                
-                <AnimatePresence>
-                  {selectedFaq === index && (
                     <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
+                  initial={false}
+                  animate={{
+                    height: activeIndex === index ? "auto" : 0,
+                    opacity: activeIndex === index ? 1 : 0,
+                  }}
                       transition={{ duration: 0.3 }}
-                      className="overflow-hidden"
+                  className="overflow-hidden bg-[#0f0f0f]/50 rounded-b-lg border-x border-b border-[#8483ec]/20"
                     >
-                      <div className="p-5 bg-[#1a1a1a] rounded-b-lg border-l-2 border-[#9b5de5]">
-                        <p className="text-gray-300">{faq.answer}</p>
-                      </div>
+                  <div className="p-5 text-gray-300">{faq.answer}</div>
                     </motion.div>
-                  )}
-                </AnimatePresence>
               </motion.div>
             ))}
-          </motion.div>
         </div>
-      </Element>
+        </section>
       
-      {/* Contact Section */}
-      <Element name="contact" className="py-20 md:py-28 bg-[#151515]">
-        <div className="container mx-auto px-4">
+        {/* Discussion Forum Section */}
+        <section ref={forumRef} className="py-20 relative">
           <motion.div
-            className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+            variants={fadeInUp}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={staggerContainer}
+            animate={forumInView ? "visible" : "hidden"}
+            className="mb-16 px-6 text-center"
           >
-            <motion.div variants={fadeIn}>
-              <h2 className="text-3xl md:text-4xl font-bold mb-5">
-                Ready to <span className="text-[#9b5de5]">Get Started?</span>
-              </h2>
-              <p className="text-gray-300 mb-8">
-                Contact us to learn more about Compendium or to request a demo for your team.
-              </p>
-              
-              <div className="space-y-6">
-                <div className="flex items-center">
-                  <div className="bg-[#9b5de5]/10 p-3 rounded-full text-[#9b5de5] mr-4">
-                    <MessageCircle size={20} />
-                  </div>
+            <h2 className="text-4xl font-bold mb-6">
+              Community <span className="text-[#8483ec]">Discussion</span>
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Join the conversation and share your experiences with Compendium.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="max-w-4xl mx-auto grid gap-6"
+            variants={staggerContainer}
+            initial="hidden"
+            animate={forumInView ? "visible" : "hidden"}
+          >
+            {forumTopics.map((topic, index) => (
+              <motion.div
+                key={index}
+                variants={fadeInUp}
+                className="bg-[#0f0f0f]/40 backdrop-blur-lg rounded-2xl border border-[#8483ec]/20 transition-all duration-300"
+              >
+                <div 
+                  className="p-6 cursor-pointer"
+                  onClick={() => toggleTopic(index)}
+                >
+                  <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="font-medium">Chat with us</h4>
-                    <p className="text-gray-400 text-sm">Our friendly team is here to help</p>
+                      <h3 className="text-xl font-bold mb-2">{topic.title}</h3>
+                      <div className="flex items-center space-x-4 text-gray-400">
+                        <span>by {topic.author}</span>
+                        <span>•</span>
+                        <span>{topic.replies} replies</span>
+                        <span>•</span>
+                        <span>{topic.lastActivity}</span>
                   </div>
+                    </div>
+                    <span className="px-3 py-1 bg-[#8483ec]/20 text-[#8483ec] rounded-full text-sm">
+                      {topic.category}
+                    </span>
+                  </div>
+                  <p className="mt-4 text-gray-300">{topic.content}</p>
                 </div>
                 
-                <div className="flex items-center">
-                  <div className="bg-[#9b5de5]/10 p-3 rounded-full text-[#9b5de5] mr-4">
-                    <Search size={20} />
-                  </div>
-                  <div>
-                    <h4 className="font-medium">Visit our help center</h4>
-                    <p className="text-gray-400 text-sm">Comprehensive documentation and guides</p>
-                  </div>
-                </div>
-              </div>
+                {expandedTopic === index && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="border-t border-[#8483ec]/20"
+                  >
+                    <div className="p-6 space-y-4">
+                      {topic.repliesList.map((reply, replyIndex) => (
+                        <div key={replyIndex} className="bg-[#0f0f0f]/60 p-4 rounded-lg">
+                          <div className="flex justify-between items-start mb-2">
+                            <span className="font-medium text-[#8483ec]">{reply.author}</span>
+                            <span className="text-sm text-gray-400">{reply.time}</span>
+                          </div>
+                          <p className="text-gray-300">{reply.content}</p>
+                          <div className="flex items-center mt-2 text-sm text-gray-400">
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                            {reply.likes}
+                          </div>
+                        </div>
+                      ))}
+                      {newReplies[index]?.map((reply, replyIndex) => (
+                        <div key={`new-${replyIndex}`} className="bg-[#0f0f0f]/60 p-4 rounded-lg">
+                          <div className="flex justify-between items-start mb-2">
+                            <span className="font-medium text-[#8483ec]">{reply.author}</span>
+                            <span className="text-sm text-gray-400">{reply.time}</span>
+                          </div>
+                          <p className="text-gray-300">{reply.content}</p>
+                          <div className="flex items-center mt-2 text-sm text-gray-400">
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                            {reply.likes}
+                          </div>
+                        </div>
+                      ))}
+                      <div className="flex items-center space-x-4 mt-4">
+                        <input
+                          type="text"
+                          value={replyInputs[index] || ""}
+                          onChange={(e) => handleReplyChange(index, e.target.value)}
+                          placeholder="Write a reply..."
+                          className="flex-1 bg-[#0f0f0f]/60 text-white px-4 py-2 rounded-lg border border-[#8483ec]/20 focus:border-[#8483ec] outline-none"
+                        />
+                        <button 
+                          onClick={() => handleAddReply(index)}
+                          className="bg-[#8483ec] px-4 py-2 rounded-lg text-white hover:bg-[#8483ec]/90 transition-colors"
+                        >
+                          Reply
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </motion.div>
+            ))}
             </motion.div>
             
             <motion.div 
-              variants={fadeIn}
-              className="bg-[#1a1a1a] rounded-xl p-6 md:p-8 border border-[#333333]"
+            className="text-center mt-10"
+            variants={fadeInUp}
+            initial="hidden"
+            animate={forumInView ? "visible" : "hidden"}
+          >
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-[#8483ec] px-8 py-3 rounded-full text-lg font-medium shadow-[0_0_20px_rgba(132,131,236,0.5)] hover:shadow-[0_0_30px_rgba(132,131,236,0.7)] transition-shadow"
             >
-              <h3 className="text-xl font-bold mb-6">Contact Us</h3>
-              
-              <form className="space-y-5">
+              Start New Discussion
+            </motion.button>
+          </motion.div>
+        </section>
+
+        {/* Contact Section */}
+        <section ref={contactRef} className="py-20 relative">
+          <motion.div
+            variants={fadeInUp}
+            initial="hidden"
+            animate={contactInView ? "visible" : "hidden"}
+            className="mb-16 px-6 text-center"
+          >
+            <h2 className="text-4xl font-bold mb-6">
+              Get In <span className="text-[#8483ec]">Touch</span>
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Have questions or want to learn more? Reach out to our team and we'll get back to you as soon as possible.
+            </p>
+          </motion.div>
+
+          <div className="max-w-3xl mx-auto">
+            <motion.form
+              className="space-y-6"
+              variants={fadeInUp}
+              initial="hidden"
+              animate={contactInView ? "visible" : "hidden"}
+            >
+              <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Name
+                  <label htmlFor="name" className="block mb-2 text-sm font-medium">
+                    Your Name
                   </label>
                   <input
                     type="text"
-                    className="w-full bg-[#252525] border border-[#333333] rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#9b5de5]/50 focus:border-transparent"
-                    placeholder="Your name"
+                    id="name"
+                    className="w-full p-3 bg-[#0f0f0f] rounded-lg border border-[#8483ec]/20 focus:ring-[#8483ec] focus:border-[#8483ec] outline-none transition-colors"
+                    required
                   />
                 </div>
-                
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Email
+                  <label htmlFor="email" className="block mb-2 text-sm font-medium">
+                    Your Email
                   </label>
                   <input
                     type="email"
-                    className="w-full bg-[#252525] border border-[#333333] rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#9b5de5]/50 focus:border-transparent"
-                    placeholder="your@email.com"
+                    id="email"
+                    className="w-full p-3 bg-[#0f0f0f] rounded-lg border border-[#8483ec]/20 focus:ring-[#8483ec] focus:border-[#8483ec] outline-none transition-colors"
+                    required
                   />
                 </div>
-                
+              </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Message
+                <label htmlFor="message" className="block mb-2 text-sm font-medium">
+                  Your Message
                   </label>
                   <textarea
-                    className="w-full bg-[#252525] border border-[#333333] rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#9b5de5]/50 focus:border-transparent h-32"
-                    placeholder="How can we help?"
-                  />
+                  id="message"
+                  rows={6}
+                  className="w-full p-3 bg-[#0f0f0f] rounded-lg border border-[#8483ec]/20 focus:ring-[#8483ec] focus:border-[#8483ec] outline-none transition-colors"
+                  required
+                ></textarea>
                 </div>
-                
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full bg-[#9b5de5] text-white font-medium py-3 rounded-lg hover:bg-[#8a4dd0] transition-colors"
+                type="submit"
+                className="w-full py-3 bg-[#8483ec] rounded-lg font-medium shadow-[0_0_15px_rgba(132,131,236,0.3)] hover:shadow-[0_0_25px_rgba(132,131,236,0.5)] transition-shadow"
                 >
                   Send Message
                 </motion.button>
-              </form>
-            </motion.div>
+            </motion.form>
+
+            <motion.div
+              className="flex justify-center mt-10 space-x-6"
+              variants={fadeInUp}
+              initial="hidden"
+              animate={contactInView ? "visible" : "hidden"}
+              transition={{ delay: 0.3 }}
+            >
+              <motion.a href="#" whileHover={{ y: -5, color: "#8483ec" }} className="text-white transition-colors">
+                <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                </svg>
+              </motion.a>
+              <motion.a href="#" whileHover={{ y: -5, color: "#8483ec" }} className="text-white transition-colors">
+                <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fillRule="evenodd"
+                    d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </motion.a>
+              <motion.a href="#" className="text-gray-400 hover:text-[#8483ec] transition-colors">
+                <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fillRule="evenodd"
+                    d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </motion.a>
           </motion.div>
         </div>
-      </Element>
-      
-      {/* Footer */}
-      <footer className="py-12 border-t border-[#333333]">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
-            <div>
-              <h4 className="text-xl font-bold text-[#9b5de5] mb-4">Compendium</h4>
-              <p className="text-gray-400 mb-6">
-                Helping teams organize and retrieve shared knowledge with ease.
+        </section>
+      </div>
+
+      {/* Footer Section */}
+      <footer className="py-12 bg-black/20 backdrop-blur-lg border-t border-[#8483ec]/20">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="text-center md:text-left">
+              <img 
+                src="/compendium-transparent.png" 
+                alt="Compendium" 
+                className="h-12 w-auto mx-auto md:mx-0 mb-4"
+              />
+              <p className="text-gray-400">
+                Where shared links live forever.
               </p>
             </div>
-            
             <div>
-              <h5 className="font-medium mb-4">Product</h5>
+              <h3 className="text-lg font-semibold mb-4 text-white">Product</h3>
               <ul className="space-y-2">
-                {["Features", "Pricing", "Integrations", "Enterprise"].map(item => (
-                  <li key={item}>
-                    <a href="#" className="text-gray-400 hover:text-[#9b5de5] transition-colors">
-                      {item}
-                    </a>
-                  </li>
-                ))}
+                <li><a href="#" className="text-gray-400 hover:text-[#8483ec] transition-colors">Features</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-[#8483ec] transition-colors">Pricing</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-[#8483ec] transition-colors">Documentation</a></li>
               </ul>
             </div>
-            
             <div>
-              <h5 className="font-medium mb-4">Resources</h5>
+              <h3 className="text-lg font-semibold mb-4 text-white">Company</h3>
               <ul className="space-y-2">
-                {["Blog", "Help Center", "Guides", "API"].map(item => (
-                  <li key={item}>
-                    <a href="#" className="text-gray-400 hover:text-[#9b5de5] transition-colors">
-                      {item}
-                    </a>
-                  </li>
-                ))}
+                <li><a href="#" className="text-gray-400 hover:text-[#8483ec] transition-colors">About</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-[#8483ec] transition-colors">Blog</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-[#8483ec] transition-colors">Careers</a></li>
               </ul>
             </div>
-            
             <div>
-              <h5 className="font-medium mb-4">Company</h5>
+              <h3 className="text-lg font-semibold mb-4 text-white">Legal</h3>
               <ul className="space-y-2">
-                {["About", "Careers", "Privacy", "Terms"].map(item => (
-                  <li key={item}>
-                    <a href="#" className="text-gray-400 hover:text-[#9b5de5] transition-colors">
-                      {item}
-                    </a>
-                  </li>
-                ))}
+                <li><a href="#" className="text-gray-400 hover:text-[#8483ec] transition-colors">Privacy</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-[#8483ec] transition-colors">Terms</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-[#8483ec] transition-colors">Contact</a></li>
               </ul>
             </div>
           </div>
-          
-          <div className="border-t border-[#333333] pt-6 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">
-              &copy; {new Date().getFullYear()} Compendium. All rights reserved.
+          <div className="mt-12 pt-8 border-t border-[#8483ec]/20 text-center">
+            <p className="text-gray-400">
+              © {new Date().getFullYear()} Compendium. All rights reserved.
             </p>
-            
-            <div className="flex space-x-4 mt-4 md:mt-0">
-              {["Twitter", "LinkedIn", "GitHub", "Discord"].map(item => (
-                <a key={item} href="#" className="text-gray-400 hover:text-[#9b5de5] transition-colors text-sm">
-                  {item}
-                </a>
-              ))}
-            </div>
           </div>
         </div>
       </footer>
+
+      {/* Font Import */}
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+        
+        body {
+          font-family: 'IBM Plex Mono', monospace;
+        }
+      `}</style>
     </div>
-  );
-};
+  )
+}
 
 export default LandingPage;

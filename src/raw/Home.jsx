@@ -1,14 +1,14 @@
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import supabase from "@/supabaseConfig"
+import { Input } from "../components/ui/input"
+import { Button } from "../components/ui/button"
+import { HoverBorderGradient } from "../components/ui/hover-border-gradient"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table"
+import supabase from "../supabaseConfig"
 import { useState, useEffect } from "react"
 import axios from "axios"
-import { cn } from "@/lib/utils"
+import { cn } from "../lib/utils"
 import { Search, Plus } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../components/ui/dialog"
 import './Home.css'
 
 function Home() {

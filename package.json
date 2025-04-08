@@ -22,9 +22,12 @@
     "lucide-react": "^0.462.0",
     "motion": "^12.6.3",
     "react": "^18.3.1",
+    "react-confetti": "^6.4.0",
     "react-dom": "^18.3.1",
+    "react-lottie": "^1.2.10",
     "react-router-dom": "^6.30.0",
     "react-scroll": "^1.9.3",
+    "react-toastify": "^11.0.5",
     "styled-components": "^6.1.17",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7"

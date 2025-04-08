@@ -1,21 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Loader from '@/components/ui/Loader'; // Import the Loader component
+import Loader from '@/components/ui/Loader';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const LoginSignupPage = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [name, setName] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [particles, setParticles] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Toggle password visibility
+  const togglePasswordVisibility = () => {
+    setShowPassword(prev => !prev);
+  };
+
+  // Toggle confirm password visibility
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(prev => !prev);
+  };
 
   // Generate background particles
   useEffect(() => {
@@ -47,11 +69,8 @@ const LoginSignupPage = () => {
           let newX = particle.x + (Math.random() * 0.2 - 0.1);
           let newOpacity = particle.opacity + (Math.random() * 0.05 - 0.025);
 
-          // Keep x within 0-100 range
           if (newX < 0) newX = 0;
           if (newX > 100) newX = 100;
-
-          // Keep opacity within 0-1 range
           if (newOpacity < 0) newOpacity = 0;
           if (newOpacity > 1) newOpacity = 1;
 
@@ -68,92 +87,131 @@ const LoginSignupPage = () => {
     return () => clearInterval(intervalId);
   }, []);
 
+  const validateForm = () => {
+    if (isLogin) {
+      if (!formData.email || !formData.password) {
+        setError('Please enter both email and password');
+        return false;
+      }
+      if (formData.password.length < 6) {
+        setError('Password must be at least 6 characters');
+        return false;
+      }
+    } else {
+      if (!formData.name) {
+        setError('Please enter your name');
+        return false;
+      }
+      if (!formData.email) {
+        setError('Please enter your email');
+        return false;
+      }
+      if (!formData.password) {
+        setError('Please enter a password');
+        return false;
+      }
+      if (!formData.confirmPassword) {
+        setError('Please confirm your password');
+        return false;
+      }
+      if (formData.password !== formData.confirmPassword) {
+        setError('Passwords do not match');
+        return false;
+      }
+      if (formData.password.length < 6) {
+        setError('Password must be at least 6 characters');
+        return false;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        setError('Please enter a valid email address');
+        return false;
+      }
+      const hasUpperCase = /[A-Z]/.test(formData.password);
+      const hasLowerCase = /[a-z]/.test(formData.password);
+      const hasNumbers = /\d/.test(formData.password);
+      const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(formData.password);
+      if (!hasUpperCase || !hasLowerCase || !hasNumbers || !hasSpecialChar) {
+        setError('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character');
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
-    setLoading(true); // Start loading here for both login and signup
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
 
     if (isLogin) {
-        // Check if email and password are provided for login
-        if (!email || !password) {
-            setError('Please enter both email and password');
-            setLoading(false); // Stop loading
-            return;
-        }
-        console.log("Sign In button clicked with credentials, navigating to /home");
-        // Simulate API call for login if needed, then navigate
-        setTimeout(() => {
-          navigate('/landing'); // Navigate to LandingPage after 2-3 seconds
-          setLoading(false); // Stop loading after navigation (or API call)
-        }, 2000); // Adjust the delay as needed (2000ms = 2 seconds)
-        return; // Stop further execution for the Sign In case
-    }
+      // Store both name and email in localStorage
+      localStorage.setItem('userName', formData.name);
+      localStorage.setItem('userEmail', formData.email);
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError('Please enter a valid email address');
-      setLoading(false);
-      return;
-    }
-
-    // Validate password length
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
-      setLoading(false);
-      return;
-    }
-
-    if (!name) {
-      setError('Please enter your name');
-      setLoading(false);
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      setLoading(false);
-      return;
-    }
-
-    const endpoint = '/api/signup'; // Replace with your actual API endpoints
-    const userData = { name, email, password };
-
-    try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
+      // Show success notification immediately
+      toast.success('Login Successful!', {
+        position: "bottom-right",
+        autoClose: 2000,
+        hideProgressBar: false,
       });
 
-      const data = await response.json();
+      // Redirect to the landing page
+      navigate('/landing');
+    } else {
+      // Only check server for signup
+      try {
+        const endpoint = '/api/signup';
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            password: formData.password
+          }),
+        });
 
-      if (response.ok) {
-        setSuccess('Account created successfully! You can now log in.');
-        setIsLogin(true); // Switch to login mode after signup success
-        setName('');
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
-      } else {
-        setError(data.message || 'Signup failed'); // Display server error message
-        console.error('Signup error:', data); // Log error for debugging
+        const data = await response.json();
+
+        if (response.ok) {
+          setSuccess('Account created successfully! You can now log in.');
+          setIsLogin(true);
+          setFormData({
+            name: '',
+            email: '',
+            password: '',
+            confirmPassword: ''
+          });
+        } else {
+          setError(data.message || 'Signup failed');
+        }
+      } catch (err) {
+        setError('Failed to connect to the server');
       }
-    } catch (err) {
-      setError('Failed to connect to the server.');
-      console.error('Fetch error:', err);
-    } finally {
-      setLoading(false); // End loading regardless of success or failure
     }
+
+    setLoading(false);
   };
 
   const toggleMode = () => {
     setIsLogin(!isLogin);
     setError('');
     setSuccess('');
+    setFormData({
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    });
   };
 
   // SVG Components for icons
@@ -188,9 +246,8 @@ const LoginSignupPage = () => {
         </>
       ) : (
         <>
-          <path d="M17.94 17.94A10.07 10.07 0 0 1 1 12c0-5.46 4.54-10 10-10a9.95 9.95 0 0 1 5.94 1.79m3.63 3.63A12.63 12.63 0 0 0 22 12c0 5.46-4.54 10-10 10a12.55 12.55 0 0 0-7.7-2.26" />
-          <circle cx="12" cy="12" r="3" />
-          <line x1="2" y1="2" x2="22" y2="22" />
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+          <line x1="1" y1="1" x2="23" y2="23" />
         </>
       )}
     </svg>
@@ -198,6 +255,19 @@ const LoginSignupPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen w-screen bg-black text-white relative overflow-hidden">
+      <ToastContainer
+        position="bottom-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
+
       {/* Show loader if loading */}
       {loading ? (
         <Loader />
@@ -246,22 +316,22 @@ const LoginSignupPage = () => {
             )}
 
             <form onSubmit={handleSubmit} className="w-full">
-              {!isLogin && (
-                <div className="mb-4">
-                  <label className="block mb-2 text-sm text-white" htmlFor="name" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                    Full Name
-                  </label>
-                  <input
-                    id="name"
-                    type="text"
-                    className="w-full px-4 py-3 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all text-white"
-                    placeholder="Enter your name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                  />
-                </div>
-              )}
+              <div className="mb-4">
+                <label className="block mb-2 text-sm text-white" htmlFor="name" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                  Your Name
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  className="w-full px-4 py-3 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all text-white"
+                  placeholder="Enter your name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                  autoComplete="off"
+                />
+              </div>
 
               <div className="mb-4">
                 <label className="block mb-2 text-sm text-white" htmlFor="email" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
@@ -269,12 +339,14 @@ const LoginSignupPage = () => {
                 </label>
                 <input
                   id="email"
+                  name="email"
                   type="email"
-                  className="w-full px-4 py-3 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-purple-500 transition-all text-white"
+                  className="w-full px-4 py-3 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all text-white"
                   placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={handleChange}
                   style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                  autoComplete="off"
                 />
               </div>
 
@@ -285,17 +357,19 @@ const LoginSignupPage = () => {
                 <div className="relative">
                   <input
                     id="password"
+                    name="password"
                     type={showPassword ? "text" : "password"}
-                    className="w-full px-4 py-3 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all text-white"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-3 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all text-white pr-12"
+                    placeholder="Password"
+                    value={formData.password}
+                    onChange={handleChange}
                     style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                    autoComplete="new-password"
                   />
                   <button
                     type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-purple-400"
-                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-purple-400"
+                    onClick={togglePasswordVisibility}
                   >
                     <EyeIcon visible={showPassword} />
                   </button>
@@ -310,17 +384,19 @@ const LoginSignupPage = () => {
                   <div className="relative">
                     <input
                       id="confirmPassword"
+                      name="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
-                      className="w-full px-4 py-3 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all text-white"
-                      placeholder="Confirm your password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="w-full px-4 py-3 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all text-white pr-12"
+                      placeholder="Confirm Password"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
                       style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                      autoComplete="new-password"
                     />
                     <button
                       type="button"
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-purple-400"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-purple-400"
+                      onClick={toggleConfirmPasswordVisibility}
                     >
                       <EyeIcon visible={showConfirmPassword} />
                     </button>

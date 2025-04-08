@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Home from './raw/Home'; // Path seems correct based on previous findings
-import LoginSignupPage from './components/LoginSignupPage'; // Path seems correct
+import Home from './raw/Home';
+import LoginSignupPage from './components/LoginSignupPage';
 import LandingPage from './components/ui/LandingPage';
 
 import './App.css';
@@ -11,20 +11,20 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Default route redirects to login */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+
         {/* Route for the login page */}
         <Route path="/login" element={<LoginSignupPage />} />
+
+        {/* Route for the landing page */}
+        <Route path="/landing" element={<LandingPage />} />
 
         {/* Route for the home page */}
         <Route path="/home" element={<Home />} />
 
-        {/* Route for the LandingPage */}
-        <Route path="/landing" element={<LandingPage />} />
-
-        {/* Default route redirects to /login */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
-
-         {/* Optional: Catch-all for unmatched routes */}
-         <Route path="*" element={<div>404 Not Found</div>} />
+        {/* Catch-all for unmatched routes */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );
