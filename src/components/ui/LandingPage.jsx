@@ -176,62 +176,58 @@ const LandingPage = () => {
     },
   ]
 
-  // Add avatar generation function
-  const getAvatar = (name) => {
-    const colors = ['#6366f1', '#8b5cf6', '#d946ef', '#ec4899', '#f43f5e', '#f97316', '#eab308', '#22c55e', '#3b82f6'];
-    const initials = name
-      .split(' ')
-      .map(word => word[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-    
-    const colorIndex = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length;
-    
-    return {
-      initials,
-      color: colors[colorIndex]
-    };
-  };
-
-  // Update testimonials data to include avatars
+  // Update testimonials data
   const testimonials = [
     {
       name: "Priya R.",
       title: "Community Manager",
       text: "This solved our biggest community pain point.",
-      avatar: getAvatar("Priya R.")
     },
     {
       name: "Rajat K.",
       title: "Product Lead",
       text: "The AI search is mind-blowing.",
-      avatar: getAvatar("Rajat K.")
     },
     {
       name: "Anjali S.",
       title: "Team Lead",
       text: "No more scrolling through chats.",
-      avatar: getAvatar("Anjali S.")
     },
     {
       name: "Kunal V.",
       title: "Developer",
       text: "Love the interface!",
-      avatar: getAvatar("Kunal V.")
     },
     {
       name: "Rhea M.",
       title: "Content Creator",
       text: "Organizing links has never been easier.",
-      avatar: getAvatar("Rhea M.")
     },
     {
       name: "Mohit J.",
       title: "UX Designer",
       text: "Beautifully executed platform.",
-      avatar: getAvatar("Mohit J.")
-    }
+    },
+    {
+      name: "Sneha D.",
+      title: "Marketing Head",
+      text: "Increased productivity across teams.",
+    },
+    {
+      name: "Vikram A.",
+      title: "Project Manager",
+      text: "Seamless integration with our existing tools.",
+    },
+    {
+      name: "Divya Patel",
+      title: "Data Analyst",
+      text: "The analytics dashboard provides valuable insights.",
+    },
+    {
+      name: "Aryan Singh",
+      title: "Software Engineer",
+      text: "Easy to use and highly efficient.",
+    },
   ]
 
   // FAQ data
@@ -255,6 +251,22 @@ const LandingPage = () => {
       question: "Can I import old links?",
       answer:
         "Yes! Compendium allows you to bulk import links from various sources including browser bookmarks, spreadsheets, and even directly from chat platforms like WhatsApp and Telegram.",
+    },
+    {
+      question: "How secure is my data?",
+      answer:
+        "We employ industry-standard security measures, including encryption and regular backups, to ensure your data is always safe and protected.",
+    },
+    {
+      question: "Is there a limit to the number of links I can store?",
+      answer:
+        "The number of links you can store depends on your chosen pricing plan. Our Pro and Enterprise plans offer unlimited link storage.",
+    },
+    
+    {
+      question: "What kind of support do you offer?",
+      answer:
+        "We offer comprehensive support through email, chat, and a detailed knowledge base. Priority support is available for Pro and Enterprise users.",
     },
   ]
 
@@ -342,21 +354,18 @@ const LandingPage = () => {
       lastActivity: "2 hours ago",
       category: "Guides",
       content: "I'm new to Compendium and would love to hear some tips on how to get started. What features should I explore first?",
-      avatar: getAvatar("Priya Sharma"),
       repliesList: [
         {
           author: "Arjun Patel",
           time: "1 hour ago",
           content: "Welcome! I'd recommend starting with the link organization features. They're super intuitive and will help you get the most out of Compendium right away.",
           likes: 12,
-          avatar: getAvatar("Arjun Patel")
         },
         {
           author: "Meera Desai",
           time: "45 minutes ago",
           content: "Don't forget to check out the AI search feature - it's a game changer for finding specific content in your collection.",
           likes: 8,
-          avatar: getAvatar("Meera Desai")
         }
       ]
     },
@@ -373,14 +382,12 @@ const LandingPage = () => {
           time: "4 hours ago",
           content: "I use a combination of tags and categories. Tags for quick filtering, categories for broader organization.",
           likes: 15,
-          avatar: getAvatar("Ananya Singh")
         },
         {
           author: "Vikram Reddy",
           time: "3 hours ago",
           content: "I create custom collections for different projects. Makes it easy to share with team members.",
           likes: 9,
-          avatar: getAvatar("Vikram Reddy")
         }
       ]
     },
@@ -397,14 +404,34 @@ const LandingPage = () => {
           time: "20 hours ago",
           content: "I use it to find old resources I've saved but can't remember the exact title of. Saves so much time!",
           likes: 21,
-          avatar: getAvatar("Aditya Kumar")
         },
         {
           author: "Ishaan Malhotra",
           time: "18 hours ago",
           content: "The contextual understanding is impressive. It finds related content I didn't even know I had.",
           likes: 17,
-          avatar: getAvatar("Ishaan Malhotra")
+        }
+      ]
+    },
+    {
+      title: "Share Your Favorite Use Cases",
+      author: "Compendium Team",
+      replies: 7,
+      lastActivity: "3 days ago",
+      category: "Announcements",
+      content: "We'd love to hear how you're using Compendium in your daily workflow. Share your most creative and efficient use cases!",
+      repliesList: [
+        {
+          author: "Sakshi Iyer",
+          time: "2 days ago",
+          content: "I've created a collection of resources for onboarding new team members. It's saved me so much time and effort!",
+          likes: 5,
+        },
+        {
+          author: "Gaurav Menon",
+          time: "1 day ago",
+          content: "I use Compendium to curate research papers for my academic projects. The AI search helps me find relevant information quickly.",
+          likes: 3,
         }
       ]
     }
@@ -435,7 +462,6 @@ const LandingPage = () => {
       time: "Just now",
       content: replyInputs[topicIndex],
       likes: 0,
-      avatar: getAvatar(userName)
     };
 
     setNewReplies(prev => ({
@@ -449,8 +475,12 @@ const LandingPage = () => {
     }));
   };
 
+  const handleGetStarted = () => {
+    navigate('/components/ui/Home')
+  }
+
   const handleViewProduct = () => {
-    navigate('/home')
+    navigate('/components/ui/Home')
   }
 
   // Update the testimonials section JSX
@@ -464,7 +494,7 @@ const LandingPage = () => {
             className="absolute inset-0"
             style={{
               backgroundImage: `linear-gradient(#ffffff 0.5px, transparent 0.5px), linear-gradient(90deg, #ffffff 0.5px, transparent 0.5px)`,
-              backgroundSize: "25px 25px",
+              backgroundSize: "35px 35px",
             }}
           ></div>
         </div>
@@ -518,7 +548,7 @@ const LandingPage = () => {
       {/* Navbar */}
         <nav
         className={`fixed w-full z-50 transition-all duration-300 ${
-            isScrolled ? "bg-black/20 backdrop-blur-lg shadow-lg" : "bg-transparent"
+            isScrolled ? "bg-black/20 backdrop-blur-lg shadow-lg rounded-full" : "bg-transparent"
         }`}
       >
           <div className="container mx-auto px-6 py-4">
@@ -530,7 +560,7 @@ const LandingPage = () => {
                   className="h-12 w-auto"
                 />
           </div>
-              <div className="hidden md:flex items-center space-x-8">
+              <div className="hidden md:flex items-center space-x-8 font-['Inter']">
                 <Link
                   to="home"
                 spy={true}
@@ -599,8 +629,8 @@ const LandingPage = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate('/home')}
-                  className="bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] px-6 py-2 rounded-full font-medium shadow-[0_0_15px_rgba(99,102,241,0.5)] hover:shadow-[0_0_25px_rgba(139,92,246,0.7)] transition-shadow text-white"
+                  onClick={handleViewProduct}
+                  className="bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] px-6 py-2 rounded-full font-medium shadow-[0_0_15px_rgba(99,102,241,0.5)] hover:shadow-[0_0_25px_rgba(139,92,246,0.7)] transition-shadow text-white font-['Inter']"
                 >
                   View Our Product
                 </motion.button>
@@ -643,7 +673,7 @@ const LandingPage = () => {
               className="absolute inset-0 opacity-[0.03]"
             style={{ 
                 backgroundImage: `linear-gradient(#ffffff 0.5px, transparent 0.5px), linear-gradient(90deg, #ffffff 0.5px, transparent 0.5px)`,
-                backgroundSize: "25px 25px",
+                backgroundSize: "35px 35px",
             }}
             ></div>
           </motion.div>
@@ -663,9 +693,9 @@ const LandingPage = () => {
               transition={{ duration: 0.8 }}
               className="max-w-4xl mx-auto"
             >
-              <Typewriter text="Where Shared Links Live Forever" className="text-5xl md:text-7xl font-bold mb-6 leading-tight tracking-tight text-left" />
+              <Typewriter text="Where Shared Links Live Forever" className="text-5xl md:text-7xl font-bold mb-6 leading-tight tracking-tight text-center" />
               <motion.p 
-                className="text-xl md:text-2xl text-gray-300 mb-10 max-w-3xl ml-0"
+                className="text-xl md:text-2xl text-gray-300 mb-10 max-w-3xl"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 1 }}
@@ -681,7 +711,8 @@ const LandingPage = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="bg-[#8483ec] px-8 py-4 rounded-full text-lg font-medium shadow-[0_0_20px_rgba(132,131,236,0.5)] hover:shadow-[0_0_30px_rgba(132,131,236,0.7)] transition-shadow"
+                  onClick={handleGetStarted}
+                  className="bg-[#8483ec] px-8 py-4 rounded-full text-lg font-medium shadow-[0_0_20px_rgba(132,131,236,0.5)] hover:shadow-[0_0_30px_rgba(132,131,236,0.7)] transition-shadow font-['Inter']"
                 >
                   Get Started For Free
                 </motion.button>
@@ -689,7 +720,7 @@ const LandingPage = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleViewProduct}
-                  className="bg-transparent border-2 border-white px-8 py-4 rounded-full text-lg font-medium hover:bg-white/10 transition-colors"
+                  className="bg-transparent border-2 border-white px-8 py-4 rounded-full text-lg font-medium hover:bg-white/10 transition-colors font-['Inter']"
                 >
                   View Our Product
                 </motion.button>
@@ -720,13 +751,13 @@ const LandingPage = () => {
             variants={fadeInUp}
             initial="hidden"
             animate={aboutInView ? "visible" : "hidden"}
-            className="max-w-4xl mx-auto px-6 text-center"
+            className="max-w-4xl mx-auto px-12"
           >
-            <h2 className="text-4xl font-bold mb-6">
+            <h2 className="text-4xl font-bold mb-6 text-left">
               Built for <span className="text-[#8483ec]">Communities</span>, by a{" "}
               <span className="text-[#8483ec]">Community</span>
             </h2>
-            <p className="text-xl text-gray-300 mb-10 leading-relaxed max-w-3xl mx-auto">
+            <p className="text-xl text-gray-300 mb-10 leading-relaxed max-w-3xl mx-auto text-left">
               Compendium was born out of a simple problem faced in every WhatsApp or online group—shared links get lost
               in endless chats. We built a centralized tool that stores, categorizes, and intelligently retrieves links
               so knowledge never gets buried again.
@@ -740,18 +771,18 @@ const LandingPage = () => {
             variants={fadeInUp}
             initial="hidden"
             animate={featuresInView ? "visible" : "hidden"}
-            className="mb-16 px-6 text-center"
+            className="mb-16 px-12"
           >
-            <h2 className="text-4xl font-bold mb-6">
+            <h2 className="text-4xl font-bold mb-8 text-left">
               Powerful <span className="text-[#8483ec]">Features</span>
             </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-300 max-w-3xl  mb-6 text-left">
               Compendium comes packed with tools designed to make knowledge sharing and retrieval effortless.
             </p>
           </motion.div>
           
           <motion.div
-            className="grid md:grid-cols-2 gap-10"
+            className="grid md:grid-cols-2 gap-10 px-12"
             variants={staggerContainer}
             initial="hidden"
             animate={featuresInView ? "visible" : "hidden"}
@@ -777,12 +808,12 @@ const LandingPage = () => {
             variants={fadeInUp}
             initial="hidden"
             animate={testimonialsInView ? "visible" : "hidden"}
-            className="mb-16 px-6 text-center"
+            className="mb-16 px-12"
           >
-            <h2 className="text-4xl font-bold mb-6">
+            <h2 className="text-4xl font-bold mb-6 text-left">
               What Our <span className="text-[#8483ec]">Users Say</span>
             </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-300 max-w-3xl  mb-6  text-left">
               Don't just take our word for it. Here's what people are saying about Compendium.
             </p>
           </motion.div>
@@ -823,10 +854,12 @@ const LandingPage = () => {
             animate={pricingInView ? "visible" : "hidden"}
             className="mb-16 px-6 text-center"
           >
-            <h2 className="text-4xl font-bold mb-6">
-              Simple <span className="text-[#8483ec]">Pricing</span>
-            </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <h2 className="text-4xl font-bold mb-6 pl-8 text-left">
+  Choose the Right{" "}
+  <span className="text-[#8483ec]">Plan for You</span>
+</h2>
+
+            <p className="text-xl text-gray-300 max-w-3xl mb-6 pl-10 text-left">
               Choose the plan that works best for your team. All plans include core features.
             </p>
           </motion.div>
@@ -894,11 +927,11 @@ const LandingPage = () => {
             animate={faqInView ? "visible" : "hidden"}
             className="mb-16 px-6 text-center"
           >
-            <h2 className="text-4xl font-bold mb-6">
+            <h2 className="text-4xl font-bold mb-6 ml- 4 pl-6 text-left">
               Frequently Asked <span className="text-[#8483ec]">Questions</span>
             </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Got questions? We've got answers. If you don't see what you're looking for, reach out to our team.
+            <p className="text-xl text-gray-300 max-w-6xl ml-4 pl-6 mx-auto">
+               Got Questions? Answers below. Still need help? Our team's just a click away.
             </p>
           </motion.div>
           
@@ -953,10 +986,10 @@ const LandingPage = () => {
             animate={forumInView ? "visible" : "hidden"}
             className="mb-16 px-6 text-center"
           >
-            <h2 className="text-4xl font-bold mb-6">
+            <h2 className="text-4xl font-bold mb-6 ml- 4 pl-6 text-left">
               Community <span className="text-[#8483ec]">Discussion</span>
             </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-300 max-w-4xl mx-auto ml- 4 pl-4 text-left">
               Join the conversation and share your experiences with Compendium.
             </p>
           </motion.div>
@@ -1096,28 +1129,42 @@ const LandingPage = () => {
               animate={contactInView ? "visible" : "hidden"}
             >
               <div className="grid md:grid-cols-2 gap-6">
+              <div>
+  <label
+    htmlFor="name"
+    className="block mb-2 text-sm font-medium text-white"
+  >
+    Your Name
+  </label>
+  <input
+    type="text"
+    id="name"
+    name="name"
+    autoComplete="off"
+    className="w-full p-3 bg-[#0f0f0f] rounded-lg border border-[#8483ec]/20 focus:ring-[#8483ec] focus:border-[#8483ec] outline-none transition-colors text-white placeholder-gray-400"
+    required
+    placeholder="Enter your full name"
+  />
+</div>
+
                 <div>
-                  <label htmlFor="name" className="block mb-2 text-sm font-medium">
-                    Your Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    className="w-full p-3 bg-[#0f0f0f] rounded-lg border border-[#8483ec]/20 focus:ring-[#8483ec] focus:border-[#8483ec] outline-none transition-colors"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block mb-2 text-sm font-medium">
-                    Your Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    className="w-full p-3 bg-[#0f0f0f] rounded-lg border border-[#8483ec]/20 focus:ring-[#8483ec] focus:border-[#8483ec] outline-none transition-colors"
-                    required
-                  />
-                </div>
+  <label
+    htmlFor="email"
+    className="block mb-2 text-sm font-medium text-white"
+  >
+    Your Email
+  </label>
+  <input
+    type="email"
+    id="email"
+    name="email"
+    autoComplete="off"
+    className="w-full p-3 bg-[#0f0f0f] rounded-lg border border-[#8483ec]/20 focus:ring-[#8483ec] focus:border-[#8483ec] outline-none transition-colors text-white placeholder-gray-400"
+    required
+    placeholder="you@example.com"
+  />
+</div>
+
               </div>
                 <div>
                 <label htmlFor="message" className="block mb-2 text-sm font-medium">

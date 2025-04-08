@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Home from './raw/Home';
 import LoginSignupPage from './components/LoginSignupPage';
 import LandingPage from './components/ui/LandingPage';
+import RawHomePage from './components/Home';
 
 import './App.css';
 
@@ -20,8 +20,8 @@ function App() {
         {/* Route for the landing page */}
         <Route path="/landing" element={<LandingPage />} />
 
-        {/* Route for the home page */}
-        <Route path="/home" element={<Home />} />
+        {/* Route for the raw home page (assuming this is the intended 'Home') */}
+        <Route path="/raw/home" element={<RawHomePage />} />
 
         {/* Catch-all for unmatched routes */}
         <Route path="*" element={<Navigate to="/login" replace />} />

@@ -148,13 +148,7 @@ const LoginSignupPage = () => {
       return;
     }
 
-    setLoading(true);
-
     if (isLogin) {
-      // Store both name and email in localStorage
-      localStorage.setItem('userName', formData.name);
-      localStorage.setItem('userEmail', formData.email);
-
       // Show success notification immediately
       toast.success('Login Successful!', {
         position: "bottom-right",
@@ -162,8 +156,17 @@ const LoginSignupPage = () => {
         hideProgressBar: false,
       });
 
-      // Redirect to the landing page
-      navigate('/landing');
+      // Store user data in localStorage
+      localStorage.setItem('userName', formData.name);
+      localStorage.setItem('userEmail', formData.email);
+
+      // Show loader
+      setLoading(true);
+
+      // Wait for notification to show and then navigate
+      setTimeout(() => {
+        navigate('/landing');
+      }, 2000);
     } else {
       // Only check server for signup
       try {
@@ -198,8 +201,6 @@ const LoginSignupPage = () => {
         setError('Failed to connect to the server');
       }
     }
-
-    setLoading(false);
   };
 
   const toggleMode = () => {
