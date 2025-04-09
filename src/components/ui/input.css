@@ -1,16 +1,36 @@
+/* src/components/ui/input.css */
+
 .input {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid #444; /* Subtle border */
-  border-radius: 8px;
-  background-color: #1a1a1a; /* Dark background */
-  color: #fff; /* White text */
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  font-family: 'IBM Plex Mono', monospace;
+  border-radius: var(--radius);
+  background-color: hsl(var(--input-bg) / 0.6); /* Darker semi-transparent */
+  color: hsl(var(--foreground)); /* White text */
+  border: 1px solid hsl(var(--border));
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  outline: none;
+}
+
+.input::placeholder {
+  color: hsl(var(--muted-foreground));
+  opacity: 0.6;
+}
+
+.input:hover:not(:disabled) {
+    border-color: hsl(var(--border) / 1.3);
+    background-color: hsl(var(--input-bg) / 0.7);
 }
 
 .input:focus {
-  border-color: #8182ed; /* Accent color on focus */
-  box-shadow: 0 0 0 3px rgba(129, 130, 237, 0.3); /* Focus ring */
-  outline: none;
+  border-color: hsl(var(--accent));
+  background-color: transparent; /* Transparent on focus */
+  box-shadow: 0 0 0 3px hsl(var(--accent) / 0.15); /* Simple accent glow */
+}
+
+.input:disabled {
+    opacity: 0.5; cursor: not-allowed;
+    background-color: hsl(var(--input-bg) / 0.4);
 }

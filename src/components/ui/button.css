@@ -1,46 +1,78 @@
-/* Define the animation for the border */
-@keyframes borderEffect {
-  0% { border-color: #8182ed; }
-  50% { border-color: #8182ed; }
-  100% { border-color: #8182ed; }
-}
+/* src/components/ui/button.css */
 
 .button {
-  /* Base styles */
-  background-color: #000; /* Black background */
-  color: #fff; /* White text for contrast */
-  border: 1px solid transparent; /* Thinner border */
-  border-radius: 9999px; /* Fully rounded */
-  padding: 0.5rem 1rem; /* Smaller padding */
-  font-size: 0.875rem; /* Smaller font size */
-  font-weight: 500;
-  cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  transition: all 0.3s ease-in-out;
   position: relative;
-  overflow: hidden;
-  margin-right: 0.5rem; /* Add margin for spacing between buttons */
-
-  /* Border animation */
-  animation: borderEffect 3s linear infinite; /* Apply border animation */
-}
-
-.button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.button:focus {
+  white-space: nowrap;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  font-weight: 500; /* Base button weight */
+  padding: 0.65rem 1.25rem;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease-out, border-color 0.4s ease;
+  border: 1px solid hsl(var(--border)); /* Default border */
+  background-color: transparent; /* Transparent background */
+  color: hsl(var(--muted-foreground)); /* Muted text color by default */
+  font-family: var(--font-sans);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(129, 130, 237, 0.4); /* Focus ring with accent color */
+  overflow: hidden;
 }
 
-.button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  border-color: #555; /* Grey border for disabled state */
-  animation: none; /* Stop animation */
+/* --- General Hover/Focus/Active --- */
+.button:hover:not(:disabled) {
+  border-color: hsl(var(--accent));
+  color: hsl(var(--foreground)); /* White text */
+  transform: translateY(-1px);
 }
+.button:active:not(:disabled) {
+  transform: translateY(0px);
+  border-color: hsl(var(--accent-hover));
+  color: hsl(var(--accent-hover));
+}
+.button:focus-visible {
+  box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--accent) / 0.7);
+  border-color: hsl(var(--accent));
+}
+
+/* --- Primary Button Style --- */
+.button-primary {
+  border-color: hsl(var(--accent));
+  color: hsl(var(--accent));
+  font-weight: 600; /* Bolder primary */
+}
+.button-primary:hover:not(:disabled) {
+  border-color: hsl(var(--accent-hover));
+  color: hsl(var(--accent-hover));
+  background-color: hsl(var(--accent) / 0.1);
+  transform: translateY(-2px) scale(1.02);
+}
+.button-primary:active:not(:disabled) {
+  transform: translateY(0px) scale(1);
+  color: hsl(var(--foreground)); /* White text on press */
+  background-color: hsl(var(--accent) / 0.2);
+}
+
+/* --- Secondary Button Style (same as default in this simplified version) --- */
+.button-secondary {
+   /* Inherits base .button styles */
+}
+
+/* --- Disabled State --- */
+.button:disabled {
+  opacity: 0.4; cursor: not-allowed; transform: none;
+  border-color: hsl(var(--border) / 0.5);
+  color: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* --- Icon Styling --- */
+.button .icon {
+  margin-right: 0.5rem; flex-shrink: 0; width: 1em; height: 1em;
+  vertical-align: middle; margin-top: -1px;
+  transition: transform 0.2s ease-out;
+  opacity: 0.8;
+}
+.button:hover:not(:disabled) .icon { transform: scale(1.1); opacity: 1; }
+.button .icon:only-child { margin-right: 0; }

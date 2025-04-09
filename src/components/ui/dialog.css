@@ -1,105 +1,54 @@
+/* src/components/ui/dialog.css */
+
 .fixedOverlay {
-    position: fixed;
-    inset: 0;
-    z-index: 50;
-    background-color: rgba(0, 0, 0, 0.8);
-  }
-  
-  .dialogContent {
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    z-index: 50;
-    display: grid;
-    width: 100%;
-    max-width: 32rem;
-    transform: translate(-50%, -50%);
-    gap: 1rem;
-    border: 1px solid;
-    background-color: #ffffff; 
-    padding: 1.5rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    border-radius: 0; 
-  }
-  
-  @media (min-width: 640px) {
-    .dialogContent {
-      border-radius: 0.5rem;
-    }
-  }
-  
-  
-  .dialogCloseButton {
-    position: absolute;
-    right: 1rem;
-    top: 1rem;
-    border-radius: 0.125rem;
-    opacity: 0.7;
-    transition-property: opacity;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
-    background-color: transparent; 
-    color: inherit; 
-  }
-  
-  .dialogCloseButton:hover {
-    opacity: 1;
-  }
-  
-  .dialogCloseButton:focus {
-    outline: 2px solid transparent;
-    outline-offset: 2px;
-    border-width: 2px;
-    border-style: solid;
-    
-  }
-  
-  .dialogCloseButton:disabled {
-    pointer-events: none;
-  }
-  
-  [data-state="open"] > .dialogCloseButton {
-    background-color: #cccccc; 
-    color: #888888; 
-  }
-  
-  
-  .dialogHeader {
-    display: flex;
-    flex-direction: column;
-    row-gap: 0.375rem;
-    text-align: center;
-  }
-  
-  @media (min-width: 640px) {
-    .dialogHeader {
-      text-align: left;
-    }
-  }
-  
-  .dialogFooter {
-    display: flex;
-    flex-direction: column-reverse;
-  }
-  
-  @media (min-width: 640px) {
-    .dialogFooter {
-      flex-direction: row;
-      justify-content: flex-end;
-      column-gap: 0.5rem;
-    }
-  }
-  
-  
-  .dialogTitle {
-    font-size: 1.125rem;
-    line-height: 1;
-    font-weight: 600;
-    letter-spacing: -0.025em;
-  }
-  
-  .dialogDescription {
-    font-size: 0.875rem;
-    color: #888888; 
-  }
-  
+  position: fixed; inset: 0; z-index: 50;
+  background-color: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(5px);
+  animation: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes overlayShow { from { opacity: 0; } to { opacity: 1; } }
+
+.dialogContent {
+  font-family: var(--font-sans);
+  position: fixed; left: 50%; top: 50%; z-index: 50;
+  transform: translate(-50%, -50%);
+  width: 90vw; max-width: 55rem; max-height: 90vh;
+  overflow: hidden; display: flex; flex-direction: column; gap: 1.5rem;
+  background-color: hsl(var(--background) / 0.7); /* Darker, less transparent */
+  color: hsl(var(--foreground)); /* White Text */
+  padding: 2rem; border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes contentShow { from { opacity: 0; transform: translate(-50%,-48%) scale(0.96); } to { opacity: 1; transform: translate(-50%,-50%) scale(1); } }
+
+/* Close Button */
+.dialogCloseButton {
+  position: absolute; right: 1rem; top: 1rem; border-radius: 50%;
+  width: 2.25rem; height: 2.25rem; display: inline-flex; align-items: center;
+  justify-content: center; color: hsl(var(--muted-foreground));
+  background-color: transparent; border: 1px solid transparent;
+  cursor: pointer; transition: all 0.2s ease;
+}
+.dialogCloseButton:hover { background-color: hsl(var(--border) / 0.5); color: hsl(var(--foreground)); transform: scale(1.1); border-color: hsl(var(--border));}
+.dialogCloseButton:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--accent)); border-color: hsl(var(--accent));}
+.dialogCloseButton > svg { width: 1rem; height: 1rem; }
+
+/* Header, Footer, Title, Description */
+.dialogHeader { display: flex; flex-direction: column; gap: 0.5rem; padding-right: 2.5rem; flex-shrink: 0; }
+.dialogFooter { display: flex; flex-direction: column-reverse; gap: 0.75rem; margin-top: auto; padding-top: 1rem; border-top: 1px solid hsl(var(--border) / 0.5); flex-shrink: 0; }
+@media (min-width: 640px) { .dialogFooter { flex-direction: row; justify-content: flex-end; } }
+.dialogTitle { font-size: 1.4rem; line-height: 1.4; font-weight: 600; color: hsl(var(--foreground)); }
+.dialogDescription { font-size: 0.95rem; color: hsl(var(--muted-foreground)); line-height: 1.6; }
+
+/* Content Area for Scrolling */
+.dialog-main-content {
+    flex-grow: 1; overflow-y: auto; overflow-x: hidden;
+    margin: -0.5rem -2rem; padding: 0.5rem 2rem;
+}
+.dialog-main-content::-webkit-scrollbar { width: 6px; }
+.dialog-main-content::-webkit-scrollbar-track { background: transparent; }
+.dialog-main-content::-webkit-scrollbar-thumb { background-color: hsl(var(--border)); border-radius: 3px; }
+.dialog-main-content::-webkit-scrollbar-thumb:hover { background-color: hsl(var(--muted-foreground)); }

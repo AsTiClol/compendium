@@ -1,29 +1,27 @@
+/* src/components/ui/table.css */
+
 .table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-  background-color: #1a1a1a; /* Dark background */
-  border-radius: 8px;
-  overflow: hidden;
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  color: hsl(var(--foreground)); font-size: 0.9rem; font-family: var(--font-sans);
 }
 
-.table th, .table td {
-  padding: 0.75rem 1rem;
-  text-align: left;
-  color: #fff; /* White text */
-  border-bottom: 1px solid #333; /* Subtle border */
+.table th,
+.table td {
+  padding: 0.8rem 1rem; text-align: left; vertical-align: middle;
+  border-bottom: 1px solid hsl(var(--border) / 0.4); /* Even softer border */
 }
 
 .table th {
-  background-color: #2a2a2a; /* Slightly darker for header */
-  font-weight: 600;
+  font-weight: 500; color: hsl(var(--muted-foreground)); background-color: transparent;
+  text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.08em;
+  border-bottom-width: 1px; border-color: hsl(var(--border) / 0.6);
 }
 
-.table tr:hover {
-  background-color: #333; /* Highlight row on hover */
-}
+.table tr:last-child td { border-bottom: none; }
+.table tr { transition: background-color 0.15s ease-in-out; }
 
-.table .no-results {
-  text-align: center;
-  color: #888; /* Grey text for no results */
+.table .no-results td {
+  text-align: center; color: hsl(var(--muted-foreground)); padding: 2.5rem 1rem;
+  background-color: transparent !important; border-bottom: none;
+  font-style: italic; font-size: 0.85rem;
 }
