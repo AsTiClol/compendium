@@ -476,11 +476,11 @@ const LandingPage = () => {
   };
 
   const handleGetStarted = () => {
-    navigate('/components/ui/Home')
+    navigate('/home')
   }
 
   const handleViewProduct = () => {
-    navigate('/components/ui/Home')
+    navigate('/home')
   }
 
   // Update the testimonials section JSX

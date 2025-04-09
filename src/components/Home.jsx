@@ -1,17 +1,32 @@
-import { Input } from "./ui/input"
-import { Button } from "./ui/button"
-import { HoverBorderGradient } from "./ui/hover-border-gradient"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table"
-import supabase from "../supabaseConfig"
-import { useState, useEffect } from "react"
-import axios from "axios"
-import { cn } from "../lib/utils"
-import { Search, Plus } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog"
-import './Home.css'
+// src/components/Home.jsx
+
+// --- CHANGE THESE ---
+// UI components are in the './ui/' subdirectory
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import { HoverBorderGradient } from "./ui/hover-border-gradient";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
+
+// Files outside 'components' need to go up one level ('../')
+import supabase from "../supabaseConfig"; // ../ goes components -> src
+import { cn } from "../lib/utils";     // ../ goes components -> src
+
+// CSS file is in the same folder (assuming Home.css is in src/components/)
+import './Home.css';
+// --- END CHANGES ---
+
+// These imports are fine
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { Search, Plus } from "lucide-react";
+
+// Assuming logo is in public/ as per index.html favicon
+// No import needed for public assets
 
 function Home() {
+  // ... (rest of your component code remains the same)
   const [searchQuery, setSearchQuery] = useState("")
   const [links, setLinks] = useState([])
   const [searchResults, setSearchResults] = useState([])
@@ -33,6 +48,7 @@ function Home() {
 
   useEffect(() => {
     fetchLinks();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableSearchQuery]);
 
   const fetchLinks = async () => {
@@ -58,11 +74,18 @@ function Home() {
     }
   };
 
-  const handleSubmit = async () => {
+    const handleSubmit = async () => {
     if (!newLink.trim()) {
       alert("Please enter a valid link.");
       return;
     }
+     try {
+        new URL(newLink);
+      } catch (_) {
+        alert("Please enter a valid URL (e.g., https://example.com)");
+        return;
+      }
+
 
     setIsAddingLink(true);
     try {
@@ -101,6 +124,7 @@ function Home() {
         console.error("Error inserting link:", insertError);
         alert("Error inserting link. Please try again.");
       } else {
+        console.log("Link added:", insertData);
         setNewLink("");
         await fetchLinks();
       }
@@ -125,79 +149,78 @@ function Home() {
     }
   };
 
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSubmit();
     }
   };
 
-  const handleSearch = async () => {
+    const handleSearch = async () => {
     if (!searchQuery.trim()) {
-      alert("Please enter a valid search query.");
-      return;
-    }
-
-    setIsSearching(true);
-    setSearchResults([]);
-    try {
-      const response = await axios.post('http://localhost:8000/search', {
-        query: searchQuery,
-        k: parseInt(searchResultCount)
-      }, {
-        timeout: 30000
-      });
-
-      const { matches } = response.data;
-
-      if (!matches || !matches.length) {
+        alert("Please enter a valid search query.");
         return;
       }
 
-      const { data, error } = await supabase
-        .from('links')
-        .select('id, url, summary, created_at')
-        .in('id', matches);
-
-      if (error) {
-        console.error("Error fetching search results from Supabase:", error);
-        alert("Error fetching search result details. Please try again.");
-      } else if (data) {
-        const uniqueLinks = data.filter(link => link != null);
-        const seenIds = new Set();
-        const uniqueFilteredLinks = uniqueLinks.filter(el => {
-          const duplicate = seenIds.has(el.id);
-          seenIds.add(el.id);
-          return !duplicate;
+      setIsSearching(true);
+      setSearchResults([]);
+      try {
+        const response = await axios.post('http://localhost:8000/search', {
+          query: searchQuery,
+          k: parseInt(searchResultCount)
+        }, {
+          timeout: 30000
         });
 
-        const sortedResults = matches
-          .map(id => uniqueFilteredLinks.find(link => link.id === id))
-          .filter(link => link != null);
+        const { matches } = response.data;
 
-        setSearchResults(sortedResults);
-      } else {
-        setSearchResults([]);
-      }
+        if (!matches || !Array.isArray(matches) || matches.length === 0) {
+          console.log("No matches found from backend search.");
+          setSearchResults([]);
+          return;
+        }
 
-    } catch (error) {
-      if (axios.isCancel(error)) {
-        console.log("Search request canceled:", error.message);
-      } else if (error.code === 'ECONNABORTED') {
-        alert("The search request timed out (30 seconds). Please try again.");
-      } else if (error.response) {
-        console.error("Server Error during search:", error.response.data, error.response.status);
-        alert(`Server error during search: ${error.response.status}. Check the console.`);
-      } else if (error.request) {
-        console.error("Network Error during search:", error.request);
-        alert("Network error during search. Could not reach the backend server (http://localhost:8000).");
-      } else {
-        console.error("Error during search:", error.message);
-        alert("An unexpected error occurred during search. Please try again.");
+        const { data, error } = await supabase
+          .from('links')
+          .select('id, url, summary, created_at')
+          .in('id', matches);
+
+        if (error) {
+          console.error("Error fetching search results from Supabase:", error);
+          alert("Error fetching search result details. Please try again.");
+        } else if (data) {
+           const validLinks = data.filter(link => link != null);
+           const linkMap = new Map(validLinks.map(link => [link.id, link]));
+           const sortedResults = matches
+               .map(id => linkMap.get(id))
+              .filter(link => link != null);
+           console.log("Search results fetched and sorted:", sortedResults);
+           setSearchResults(sortedResults);
+        } else {
+          console.log("No data returned from Supabase for matched IDs.");
+          setSearchResults([]);
+        }
+
+      } catch (error) {
+        if (axios.isCancel(error)) {
+          console.log("Search request canceled:", error.message);
+        } else if (error.code === 'ECONNABORTED') {
+          alert("The search request timed out (30 seconds). Please try again.");
+        } else if (error.response) {
+          console.error("Server Error during search:", error.response.data, error.response.status);
+          alert(`Server error during search: ${error.response.status}. Check the console.`);
+        } else if (error.request) {
+          console.error("Network Error during search:", error.request);
+          alert("Network error during search. Could not reach the backend server (http://localhost:8000).");
+        } else {
+          console.error("Error during search:", error.message);
+          alert("An unexpected error occurred during search. Please try again.");
+        }
+      } finally {
+        setIsSearching(false);
       }
-    } finally {
-      setIsSearching(false);
-    }
   };
+
 
   const handleSearchKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -218,49 +241,55 @@ function Home() {
     return summary.length > maxLength ? summary.slice(0, maxLength) + '...' : summary;
   };
 
+
   return (
     <>
       <div className="home-container">
-        <img src={logo} alt="Company Logo" className="company-logo" />
+        <img src="/compendium.png" alt="Company Logo" className="company-logo" />
+
         <Dialog open={showExistingLinkDialog} onOpenChange={setShowExistingLinkDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Link Already Exists</DialogTitle>
-              <DialogDescription>
-                This link is already in the database. You can find it by searching or scrolling below.
-              </DialogDescription>
-            </DialogHeader>
-            <Button
-              onClick={() => setShowExistingLinkDialog(false)}
-              className="purple-gradient-button w-full mt-4"
-            >
-              Close
-            </Button>
-          </DialogContent>
-        </Dialog>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Link Already Exists</DialogTitle>
+                <DialogDescription>
+                  This link is already in the database. You can find it in the table below.
+                </DialogDescription>
+              </DialogHeader>
+              <Button
+                onClick={() => setShowExistingLinkDialog(false)}
+                className="mt-4 w-full"
+              >
+                Close
+              </Button>
+            </DialogContent>
+          </Dialog>
+
 
         <div className="compendium">
           <h2 className="compendium-title">Our Product</h2>
           <div className="input-group">
             <Input
-              type="text"
-              placeholder="Enter your link here..."
+              type="url"
+              placeholder="Enter your link here (e.g., https://example.com)"
               value={newLink}
               onChange={(e) => setNewLink(e.target.value)}
               onKeyPress={handleKeyPress}
               className="input"
+              aria-label="Enter link to add"
             />
             <div className="button-group">
               <Button
                 onClick={handleSubmit}
                 disabled={isAddingLink || !newLink.trim()}
-                className="purple-gradient-button"
+                className="add-link-button"
+                aria-live="polite"
               >
                 {isAddingLink ? 'Processing...' : <><Plus className="icon mr-1" size={16} />Add Link</>}
               </Button>
               <Button
                 onClick={() => setIsSearchOpen(true)}
-                className="purple-gradient-button"
+                className="look-deeper-button"
+                aria-label="Open search dialog"
               >
                 <Search className="icon mr-1" size={16} />Look Deeper
               </Button>
@@ -268,87 +297,92 @@ function Home() {
           </div>
         </div>
 
-        {isSearchOpen && (
-          <div className="search-modal">
-            <div className="search-modal-content">
-              <h2 className="search-modal-title">Query through Compendium's Knowledge Base</h2>
-              <div className="search-input-group">
-                <Input
-                  type="text"
-                  placeholder="Describe what you're looking for..."
-                  className="input"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={handleSearchKeyPress}
-                />
-                <Select value={searchResultCount} onValueChange={setSearchResultCount}>
-                  <SelectTrigger className="select-trigger">
-                    <SelectValue placeholder="Result count" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="3">3 results</SelectItem>
-                    <SelectItem value="5">5 results</SelectItem>
-                    <SelectItem value="10">10 results</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button
-                  onClick={handleSearch}
-                  disabled={isSearching || !searchQuery.trim()}
-                  className="purple-gradient-button"
-                >
-                  {isSearching ? 'Searching...' : <><Search className="icon mr-1" size={16} />Search</>}
-                </Button>
-              </div>
-              <div className="table-container">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>URL</TableHead>
-                      <TableHead>Summary</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {isSearching ? (
-                       <TableRow>
-                          <TableCell colSpan={2} className="no-results text-center">Searching...</TableCell>
-                       </TableRow>
-                    ) : searchResults.length > 0 ? (
-                      searchResults.map((link) => (
-                        <TableRow key={link.id} onClick={() => toggleRowExpansion(link.id)} className="table-row">
-                          <TableCell className="table-cell url-cell">
-                            <a href={link.url} target="_blank" rel="noopener noreferrer" className="link">
-                              {link.url}
-                            </a>
-                          </TableCell>
-                          <TableCell className="table-cell summary-cell">{renderSummary(link.summary, link.id)}</TableCell>
+         <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+             <DialogContent className="search-modal-content">
+               <DialogHeader>
+                 <DialogTitle className="search-modal-title">Query through Compendium's Knowledge Base</DialogTitle>
+               </DialogHeader>
+               <div className="search-input-group">
+                 <Input
+                   type="text"
+                   placeholder="Describe what you're looking for..."
+                   className="input"
+                   value={searchQuery}
+                   onChange={(e) => setSearchQuery(e.target.value)}
+                   onKeyPress={handleSearchKeyPress}
+                   aria-label="Enter search query"
+                 />
+                 <Select value={searchResultCount} onValueChange={setSearchResultCount}>
+                   <SelectTrigger className="select-trigger w-[120px]">
+                     <SelectValue placeholder="Results" />
+                   </SelectTrigger>
+                   <SelectContent>
+                     <SelectItem value="3">3 results</SelectItem>
+                     <SelectItem value="5">5 results</SelectItem>
+                     <SelectItem value="10">10 results</SelectItem>
+                   </SelectContent>
+                 </Select>
+                 <Button
+                   onClick={handleSearch}
+                   disabled={isSearching || !searchQuery.trim()}
+                   className="search-button"
+                   aria-live="polite"
+                 >
+                   {isSearching ? 'Searching...' : <><Search className="icon mr-1" size={16} />Search</>}
+                 </Button>
+               </div>
+
+               <div className="table-container">
+                 <Table>
+                   <TableHeader>
+                     <TableRow>
+                       <TableHead>URL</TableHead>
+                       <TableHead>Summary</TableHead>
+                     </TableRow>
+                   </TableHeader>
+                   <TableBody>
+                     {isSearching ? (
+                        <TableRow>
+                           <TableCell colSpan={2} className="no-results text-center">Searching...</TableCell>
                         </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={2} className="no-results text-center">No results found</TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-              <Button
-                onClick={() => setIsSearchOpen(false)}
-                className="purple-gradient-button mt-4"
-              >
-                Close
-              </Button>
-            </div>
-          </div>
-        )}
+                     ) : searchResults.length > 0 ? (
+                       searchResults.map((link) => (
+                         <TableRow key={`search-${link.id}`} onClick={() => toggleRowExpansion(link.id)} className="table-row">
+                           <TableCell className="table-cell url-cell">
+                             <a href={link.url} target="_blank" rel="noopener noreferrer" className="link">
+                               {link.url}
+                             </a>
+                           </TableCell>
+                           <TableCell className="table-cell summary-cell">{renderSummary(link.summary, link.id)}</TableCell>
+                         </TableRow>
+                       ))
+                     ) : (
+                       <TableRow>
+                         <TableCell colSpan={2} className="no-results text-center">No results found</TableCell>
+                       </TableRow>
+                     )}
+                   </TableBody>
+                 </Table>
+               </div>
+               <Button
+                 onClick={() => setIsSearchOpen(false)}
+                 className="close-button mt-4"
+               >
+                 Close
+               </Button>
+             </DialogContent>
+           </Dialog>
+
 
         <div className="search-bar">
           <Search className="search-icon" />
           <Input
             type="text"
-            placeholder="Search links..."
+            placeholder="Search all links..."
             value={tableSearchQuery}
             onChange={(e) => setTableSearchQuery(e.target.value)}
             className="input"
+            aria-label="Search existing links in table"
           />
         </div>
 
@@ -375,7 +409,7 @@ function Home() {
               ) : (
                 <TableRow>
                    <TableCell colSpan={2} className="no-results text-center">
-                       {tableSearchQuery ? 'No links found matching your search.' : 'No links available.'}
+                       {tableSearchQuery ? 'No links found matching your search.' : 'No links available yet. Add one above!'}
                    </TableCell>
                 </TableRow>
               )}
@@ -387,4 +421,4 @@ function Home() {
   )
 }
 
-export default Home
+export default Home;

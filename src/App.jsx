@@ -21,8 +21,7 @@ function App() {
         <Route path="/landing" element={<LandingPage />} />
 
         {/* Route for the raw home page (assuming this is the intended 'Home') */}
-        <Route path="/raw/home" element={<RawHomePage />} />
-
+        <Route path="/home" element={<RawHomePage />} />
         {/* Catch-all for unmatched routes */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
