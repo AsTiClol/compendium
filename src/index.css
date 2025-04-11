@@ -1,5 +1,5 @@
 /* src/index.css */
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap'); /* Added 400 weight */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -8,21 +8,24 @@
 @layer base {
   :root {
     /* --- FONT --- */
-    --font-sans: 'IBM Plex Mono', monospace;
+    --font-sans: 'IBM Plex Mono', monospace; /* Default font */
 
     /* --- COLOR VARIABLES --- */
-    --background: 240 10% 4%; /* Darker Background */
-    --foreground: 0 0% 100%; /* Pure White */
+    --background: 240 10% 4%;
+    --foreground: 0 0% 100%;
     --border: 240 4% 28%; /* Slightly lighter border */
-    --muted: 240 4% 18%; /* Muted elements background */
-    --muted-foreground: 240 5% 70%; /* Lighter muted text */
+    --muted: 240 4% 18%;
+    --muted-foreground: 240 5% 70%;
     --accent: 255 80% 70%; /* Brighter Purple: #b380ff */
-    --accent-hover: 255 85% 75%; /* Even brighter */
-    --input-bg: 240 5% 12%; /* Darker input */
+    --accent-hover: 255 85% 75%;
+    --input-bg: 240 5% 12%;
     --radius: 6px;
-    --ring: 255 80% 75%; /* Ring color related to accent */
+    --ring: 255 80% 75%;
+    --custom-purple: #8483ec;
+    --custom-purple-darker: #6366f1;
+    --highlight-purple: #8a2be2; /* Used by HoverBorderGradient default */
+    --section-bg: #0f0f0f; /* Defining a common section/element bg */
   }
-  /* Optional: Light theme */
   .light { /* ... */ }
 }
 
@@ -32,14 +35,29 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
-    font-weight: 400; /* Default weight */
+    font-weight: 400;
+    font-size: 16px; /* Setting a base font size for rem calculation */
+    line-height: 1.6; /* Improve default line spacing */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     margin: 0; padding: 0;
-    color: hsl(var(--foreground)); /* Ensure default text is white */
+    color: hsl(var(--foreground));
   }
-  /* Increase base boldness slightly */
+  /* Base heading/button weight */
   h1, h2, h3, h4, h5, h6, button, strong, b {
-      font-weight: 500; /* Make titles and buttons slightly bolder */
+      font-weight: 500;
+  }
+  /* Ensure interactive elements inherit font */
+  button, input, textarea, select {
+      font-family: inherit; /* Inherit from body */
+  }
+
+  /* General paragraph styling */
+  p {
+      @apply text-base text-gray-300 leading-relaxed; /* Default p size */
+  }
+  /* Adjust list item size */
+  li {
+      @apply text-sm;
   }
 }
