@@ -219,7 +219,7 @@ function euclideanDistance(vec1, vec2) {
 const app = express();
 
 // CORS Middleware Configuration
-const allowedOrigins = ["https://proximalink.vercel.app", "https://links.proximamumbai.com", "http://links.proximamumbai.com", "http://localhost:8000", "http://localhost:5173"];
+const allowedOrigins = ["*"];
 const corsOptions = {
     origin: function (origin, callback) {
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
