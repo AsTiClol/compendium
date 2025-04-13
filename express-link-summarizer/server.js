@@ -341,7 +341,7 @@ app.post("/search", validateBody(SearchSchema), async (req, res) => {
         logger.info("Fetching all link vectors from database for manual KNN...");
         const { data: links, error: fetchError } = await supabase
             .from('links')
-            .select('id, url, vector'); // Select the vector column
+            .select('id, url, summary, vector'); // Select the summary column as well
 
         if (fetchError) {
             logger.error("Supabase fetch error during search:", fetchError);
@@ -365,7 +365,7 @@ app.post("/search", validateBody(SearchSchema), async (req, res) => {
                          const dist = euclideanDistance(queryEmbedding, dbVector);
                          // Only add if distance is a finite number (not Infinity from errors)
                          if (Number.isFinite(dist)) {
-                            distances.push({ id: link.id, url: link.url, distance: dist });
+                            distances.push({ id: link.id, url: link.url, summary: link.summary, distance: dist });
                          } else {
                              logger.warn(`Invalid distance calculated for link ${link.id}. Skipping.`);
                          }
@@ -389,11 +389,18 @@ app.post("/search", validateBody(SearchSchema), async (req, res) => {
         const topMatches = distances.slice(0, k).map(match => ({
             id: match.id,
             url: match.url,
+            summary: match.summary
             // distance: match.distance // Optionally include distance for debugging/ranking info
         }));
 
         logger.info(`Search completed. Found ${topMatches.length} matches for query "${query}".`);
-        res.status(200).json({ matches: topMatches });
+        
+        // Extract just the IDs for the response format expected by the client
+        const matchIds = topMatches.map(match => match.id);
+        
+        res.status(200).json({ 
+            matches: matchIds
+        });
 
     } catch (error) {
         logger.error(`Error during search for query "${query}":`, error);
