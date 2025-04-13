@@ -1,172 +1,479 @@
-/* src/components/Home.css */
 
-/* Inherits body styles */
-a { color: hsl(var(--accent)); text-decoration: none; transition: color 0.2s ease; }
-a:hover { color: hsl(var(--accent-hover)); }
 
-/* Page Wrapper & Background Effects */
-.home-page-wrapper {
-    position: relative; min-height: 100vh;
-    background-color: hsl(var(--background)); /* Base color needed */
-    overflow: hidden; /* Contain gradients */
-}
-/* Mesh Gradients */
-.home-page-wrapper::before,
-.home-page-wrapper::after {
-    content: ""; position: fixed; z-index: -1; border-radius: 50%;
-    filter: blur(90px); /* Increased blur */ opacity: 0.18; /* Slightly more visible */
+
+a {
+    color: hsl(var(--accent));
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  a:hover {
+    color: hsl(var(--accent-hover));
+  }
+  .home-page-wrapper {
+    position: relative;
+    min-height: 100vh;
+    background-color: hsl(var(--background));
+    overflow: hidden;
+  }
+  .home-page-wrapper::before,
+  .home-page-wrapper::after {
+    content: "";
+    position: fixed;
+    z-index: -1;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.18;
     pointer-events: none;
-}
-.home-page-wrapper::before { /* Left Gradient */
-    width: 450px; height: 450px; left: -180px; top: 5%;
-    background: radial-gradient(circle, hsl(var(--accent) / 0.7), transparent 70%);
-}
-.home-page-wrapper::after { /* Right Gradient */
-    width: 550px; height: 550px; right: -220px; bottom: 0%;
-    background: radial-gradient(circle, hsl(280, 60%, 65%), transparent 70%); /* Slightly adjusted color */
-}
-
-/* Grid Background */
-.fixed-grid-background {
-  position: fixed; inset: 0; width: 100%; height: 100%;
-  z-index: 0; overflow: hidden;
-}
-.grid-lines {
-  position: absolute; inset: 0; opacity: 0.18; /* More visible grid */
-  background-image: linear-gradient(hsl(var(--foreground) / 0.35) 1px, transparent 1px), /* Brighter lines */
-                    linear-gradient(90deg, hsl(var(--foreground) / 0.35) 1px, transparent 1px);
-  background-size: 45px 45px; /* Grid cell size */
-  mask-image: radial-gradient(ellipse at center, white 35%, transparent 80%); /* Adjust fade */
-}
-
-/* Main Content Container */
-.home-container {
-  max-width: 1000px; margin: 0 auto;
-  padding: 1.5rem 1rem 5rem; position: relative; z-index: 1;
-}
-
-/* Header Area */
-.home-header {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 2.5rem; padding-top: 1rem; position: relative; z-index: 2;
-    flex-wrap: wrap; gap: 1rem;
-}
-.company-logo-link { display: block; }
-.company-logo {
-    height: 65px; /* Increased logo size */
-    width: auto; display: block; transition: transform 0.3s ease;
-}
-.company-logo:hover { transform: scale(1.05); }
-.home-header .button { padding: 0.5rem 1rem; font-size: 0.85rem; }
-
-/* Main Title Area */
-.main-title-area {
+  }
+  .home-page-wrapper::before {
+    width: 450px;
+    height: 450px;
+    left: -180px;
+    top: 5%;
+    background: radial-gradient(
+      circle,
+      hsl(var(--accent) / 0.7),
+      transparent 70%
+    );
+  }
+  .home-page-wrapper::after {
+    width: 550px;
+    height: 550px;
+    right: -220px;
+    bottom: 0%;
+    background: radial-gradient(circle, hsl(280, 60%, 65%), transparent 70%);
+  }
+  .fixed-grid-background {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .grid-lines {
+    position: absolute;
+    inset: 0;
+    opacity: 0.18;
+    background-image:
+      linear-gradient(hsl(var(--foreground) / 0.35) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--foreground) / 0.35) 1px, transparent 1px);
+    background-size: 45px 45px;
+    mask-image: radial-gradient(ellipse at center, white 35%, transparent 80%);
+  }
+  .home-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 5rem;
+    position: relative;
+    z-index: 1;
+  }
+  .home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    padding-top: 1rem;
+    position: relative;
+    z-index: 2;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .company-logo-link {
+    display: block;
+  }
+  .company-logo {
+    height: 65px;
+    width: auto;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+  .company-logo:hover {
+    transform: scale(1.05);
+  }
+  .home-header .button {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+  .main-title-area {
     text-align: center;
     margin-bottom: 3rem;
-}
-.main-title {
-    color: hsl(var(--foreground)); /* White */
+  }
+  .main-title {
+    color: hsl(var(--foreground));
     font-size: 2.2rem;
-    font-weight: 600; /* Bolder */
+    font-weight: 600;
     letter-spacing: 0.5px;
-}
-.main-title .highlight { color: hsl(var(--accent)); } /* Purple highlight */
-
-/* Grid Layout Container */
-.home-grid-container { display: grid; grid-template-columns: 1fr; gap: 3rem; position: relative; z-index: 1; }
-.home-grid-container > section { margin: 0; width: 100%; }
-
-/* Section Styling (Transparent) */
-.compendium-section, .table-section {
-  background-color: transparent; padding: 0; border: none; backdrop-filter: none;
-}
-
-/* Input Groups & Search Bar */
-.input-group { /* For Add Link */
-  display: flex; align-items: stretch; gap: 0.75rem;
-  max-width: 700px; margin: 0 auto; /* Center input group */
-}
-.search-bar { /* For Table Filter */
-    display: flex; align-items: center; gap: 0.5rem;
-    background-color: transparent; padding: 0; border: none;
+  }
+  .main-title .highlight {
+    color: hsl(var(--accent));
+  }
+  .home-grid-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    position: relative;
+    z-index: 1;
+  }
+  .home-grid-container > section {
+    margin: 0;
+    width: 100%;
+  }
+  .compendium-section,
+  .table-section {
+    background-color: transparent;
+    padding: 0;
+    border: none;
+    backdrop-filter: none;
+  }
+  
+  /* --- Main Page Input Group (Add Link) --- */
+  .input-group {
+    display: flex;
+    align-items: stretch;
+    gap: 0.75rem;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .input-group .input {
+    flex: 1;
+  }
+  .button-group {
+    display: flex;
+    gap: 0.75rem;
+  }
+  
+  /* --- Main Page Table Filter --- */
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: transparent;
+    padding: 0;
+    border: none;
     margin-bottom: 1.5rem;
-}
-.search-bar .input { /* Input inside search bar */
+  }
+  .search-bar .input {
     border: 1px solid hsl(var(--border));
     background-color: hsl(var(--input-bg) / 0.7);
     box-shadow: none;
     padding: 0.75rem 1rem;
     flex-grow: 1;
-}
-.search-bar .input:focus { box-shadow: 0 0 0 3px hsl(var(--accent) / 0.2); }
-
-.input-group .input { flex: 1; }
-.button-group { display: flex; gap: 0.75rem; }
-.search-icon-wrapper {
-    padding: 0.6rem; margin-left: 0.25rem;
-    cursor: pointer; border-radius: var(--radius);
+  }
+  .search-bar .input:focus {
+    box-shadow: 0 0 0 3px hsl(var(--accent) / 0.2);
+  }
+  .search-icon-wrapper {
+    padding: 0.6rem;
+    margin-left: 0.25rem;
+    cursor: pointer;
+    border-radius: var(--radius);
     transition: background-color 0.2s ease;
-    border: 1px solid hsl(var(--border)); /* Add border to wrapper */
-    background-color: hsl(var(--input-bg) / 0.7); /* Match input bg */
-}
-.search-icon-wrapper:hover { background-color: hsl(var(--border) / 0.5); }
-.search-icon-wrapper:focus-visible { outline: none; border-color: hsl(var(--accent)); box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--accent) / 0.7);}
-.search-icon { color: hsl(var(--muted-foreground)); width: 1.1rem; height: 1.1rem; display: block; }
-
-/* Table Container & Table */
-.table-container {
-  background-color: transparent; border-radius: var(--radius);
-  border: 1px solid hsl(var(--border)); padding: 0;
-  overflow: hidden; overflow-x: auto;
-}
-.table tr:hover td { background-color: hsl(var(--accent) / 0.1); }
-
-/* Link Styling within Table */
-.table td a.link { color: hsl(var(--accent)); }
-.table td a.link:hover { color: hsl(var(--accent-hover)); }
-
-/* Cell Styling */
-.table-row { cursor: pointer; }
-.url-cell { word-break: break-all; font-size: 0.9rem; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 1.5rem; color: hsl(var(--foreground));} /* White URL */
-.summary-cell { color: hsl(var(--muted-foreground)); font-size: 0.9rem; line-height: 1.5; }
-.summary-cell p { margin-bottom: 0.5rem; }
-.summary-cell p:last-child { margin-bottom: 0; }
-.table .no-results td { padding: 2.5rem 1rem; }
-
-/* Dialog Adjustments */
-.search-modal-title { font-size: 1.5rem; font-weight: 600; color: hsl(var(--foreground)); text-align: left; margin-bottom: 1.5rem; }
-.search-modal-content .search-input-group { margin-bottom: 1.5rem; display: flex; gap: 0.75rem; align-items: stretch;}
-.search-modal-content .dialog-main-content .table-container {
-    margin-top: 0; margin-bottom: 0; box-shadow: none;
-    border: 1px solid hsl(var(--border) / 0.5); padding: 0;
-    background-color: hsl(var(--muted) / 0.1); backdrop-filter: none;
-}
-.search-modal-content .table th { background-color: hsl(var(--muted) / 0.2); }
-.search-modal-content .table td { border-color: hsl(var(--border) / 0.4); }
-
-/* Responsiveness */
-@media (max-width: 768px) {
-    .home-container { padding: 1rem 1rem 4rem; }
-    .home-header { margin-bottom: 2rem; }
-    .main-title-area { margin-bottom: 2.5rem; }
-    .main-title { font-size: 1.8rem; }
-    .input-group { flex-direction: column; gap: 0.75rem; max-width: none; } /* Full width input group */
-    .button-group { justify-content: flex-start; width: 100%; }
-    .button-group .button { flex-grow: 1; } /* Make buttons fill width */
-    .search-bar { flex-wrap: wrap; background: transparent; border: none; padding: 0;}
-    .search-bar .input { border: 1px solid hsl(var(--border)); background-color: hsl(var(--input-bg)/0.7); min-width: 100%; margin-bottom: 0.75rem; } /* Stack filter input */
-    .search-icon-wrapper { margin-left: 0; margin-right: auto; } /* Align icon left */
-    .home-grid-container { gap: 2.5rem; }
-    .url-cell { max-width: 180px; padding-right: 0.5rem;}
-    .table th, .table td { padding: 0.6rem 0.8rem; font-size: 0.8rem; }
-    .summary-cell { font-size: 0.85rem; line-height: 1.4; }
-}
-@media (max-width: 480px) {
-    .company-logo { height: 50px; }
-    .home-header .button { font-size: 0.8rem; padding: 0.4rem 0.8rem; }
-    .main-title { font-size: 1.6rem; }
-    .button { font-size: 0.85rem; padding: 0.6rem 1rem; }
-    .input { font-size: 0.9rem; padding: 0.7rem 0.9rem; }
-    .url-cell { max-width: 150px; font-size: 0.8rem; }
-    .table th, .table td { padding: 0.5rem 0.6rem; }
-}
+    border: 1px solid hsl(var(--border));
+    background-color: hsl(var(--input-bg) / 0.7);
+  }
+  .search-icon-wrapper:hover {
+    background-color: hsl(var(--border) / 0.5);
+  }
+  .search-icon-wrapper:focus-visible {
+    outline: none;
+    border-color: hsl(var(--accent));
+    box-shadow:
+      0 0 0 2px hsl(var(--background)),
+      0 0 0 4px hsl(var(--accent) / 0.7);
+  }
+  .search-icon {
+    color: hsl(var(--muted-foreground));
+    width: 1.1rem;
+    height: 1.1rem;
+    display: block;
+  }
+  
+  /* --- Main Page Table --- */
+  .table-container {
+    background-color: transparent;
+    border-radius: var(--radius);
+    border: 1px solid hsl(var(--border));
+    padding: 0;
+    overflow: hidden;
+    overflow-x: auto;
+  }
+  .table tr:hover td {
+    background-color: hsl(var(--accent) / 0.1);
+  } /* Keep subtle hover */
+  .table td a.link {
+    color: hsl(var(--accent));
+  }
+  .table td a.link:hover {
+    color: hsl(var(--accent-hover));
+    text-decoration: underline;
+  }
+  .table-row {
+    cursor: pointer;
+  }
+  .url-cell {
+    word-break: break-all;
+    font-size: 0.9rem;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 1.5rem;
+    color: hsl(var(--foreground));
+  }
+  .summary-cell {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .summary-cell p {
+    margin-bottom: 0.5rem;
+  }
+  .summary-cell p:last-child {
+    margin-bottom: 0;
+  }
+  .table .no-results td {
+    padding: 2.5rem 1rem;
+    text-align: center;
+    color: hsl(var(--muted-foreground));
+    font-style: italic;
+    border-bottom: none;
+    background: transparent !important;
+  }
+  
+  /* ===== Styles specific to the Search Dialog in Home.jsx ===== */
+  
+  /* Target DialogContent via the class added in Home.jsx */
+  .search-modal-content .dialogHeader {
+    /* Using default padding/border from dialog.css */
+  }
+  .search-modal-content .search-modal-title {
+    /* Using default padding/border from dialog.css */
+  }
+  
+  /* Input Group inside Dialog */
+  .search-modal-content .search-input-group {
+    display: flex;
+    align-items: center; /* Vertically align items */
+    gap: 0.75rem; /* Space between elements */
+    /* Margin bottom handled by dialog-main-content padding */
+  }
+  .search-modal-content .search-input-group .input {
+    flex-grow: 1;
+  }
+  .search-modal-content .search-input-group .button,
+  .search-modal-content .search-input-group [role="combobox"] {
+    flex-shrink: 0;
+  }
+  
+  /* Table Container inside Dialog */
+  .search-modal-content .table-container {
+    border: 1px solid hsl(var(--border) / 0.7);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background-color: hsl(var(--muted) / 0.15);
+    margin-top: 1.5rem; /* Add space above table */
+    margin-bottom: 0;
+    box-shadow: none;
+  }
+  
+  /* Table Headers inside Dialog */
+  .search-modal-content .table th {
+    background-color: hsl(var(--muted) / 0.3);
+    color: hsl(var(--foreground) / 0.9);
+    font-size: 0.8rem;
+    padding: 0.75rem 1rem;
+    border-color: hsl(var(--border) / 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.05em; /* Subtle spacing */
+  }
+  
+  /* Table Cells inside Dialog */
+  .search-modal-content .table td {
+    padding: 0.75rem 1rem;
+    border-color: hsl(var(--border) / 0.4);
+    vertical-align: top; /* Align content top */
+  }
+  .search-modal-content .table tr:hover td {
+    background-color: hsl(var(--accent) / 0.08);
+  }
+  
+  /* URL Cell Styling (Dialog) */
+  .search-modal-content .url-cell {
+    word-break: break-all;
+    font-size: 0.85rem;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 1.5rem;
+    color: hsl(var(--foreground));
+  }
+  .search-modal-content .url-cell a.link {
+    color: hsl(var(--accent));
+  }
+  .search-modal-content .url-cell a.link:hover {
+    color: hsl(var(--accent-hover));
+    text-decoration: underline;
+  }
+  
+  /* Summary Cell Styling (Dialog) */
+  .search-modal-content .summary-cell {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+  .search-modal-content .summary-cell p {
+    margin-bottom: 0.5rem;
+  }
+  .search-modal-content .summary-cell p:last-child {
+    margin-bottom: 0;
+  }
+  
+  /* Loading/No Results State (Dialog) */
+  .search-modal-content .table .no-results td,
+  .search-modal-content .table .searching-cell td {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: hsl(var(--muted-foreground));
+    font-style: italic;
+    font-size: 0.9rem;
+    border-bottom: none;
+  }
+  /* Styling for explicit loading row */
+  .search-modal-content .searching-cell .flex {
+    /* Target inner flex container */
+    color: hsl(var(--muted-foreground));
+  }
+  
+  /* --- Responsiveness --- */
+  @media (max-width: 768px) {
+    .home-container {
+      padding: 1rem 1rem 4rem;
+    }
+    .home-header {
+      margin-bottom: 2rem;
+    }
+    .main-title-area {
+      margin-bottom: 2.5rem;
+    }
+    .main-title {
+      font-size: 1.8rem;
+    }
+    .input-group {
+      flex-direction: column;
+      gap: 0.75rem;
+      max-width: none;
+    }
+    .button-group {
+      justify-content: flex-start;
+      width: 100%;
+    }
+    .button-group .button {
+      flex-grow: 1;
+    }
+    .search-bar {
+      flex-wrap: wrap;
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
+    .search-bar .input {
+      border: 1px solid hsl(var(--border));
+      background-color: hsl(var(--input-bg) / 0.7);
+      min-width: 100%;
+      margin-bottom: 0.75rem;
+    }
+    .search-icon-wrapper {
+      margin-left: 0;
+      margin-right: auto;
+    }
+    .home-grid-container {
+      gap: 2.5rem;
+    }
+    .url-cell {
+      max-width: 180px;
+      padding-right: 0.5rem;
+    } /* Apply to main table */
+    .table th,
+    .table td {
+      padding: 0.6rem 0.8rem;
+      font-size: 0.8rem;
+    } /* Apply to main table */
+    .summary-cell {
+      font-size: 0.85rem;
+      line-height: 1.4;
+    } /* Apply to main table */
+  
+    /* Dialog specific responsive */
+    .search-modal-content .search-input-group {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.75rem;
+    }
+    .search-modal-content .search-input-group .button,
+    .search-modal-content .search-input-group [role="combobox"] {
+      width: 100%;
+    }
+    .search-modal-content .url-cell {
+      max-width: 180px;
+      font-size: 0.8rem;
+    }
+    .search-modal-content .table th,
+    .search-modal-content .table td {
+      padding: 0.6rem 0.8rem;
+      font-size: 0.8rem;
+    }
+    .search-modal-content .summary-cell {
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+  }
+  @media (max-width: 480px) {
+    .company-logo {
+      height: 50px;
+    }
+    .home-header .button {
+      font-size: 0.8rem;
+      padding: 0.4rem 0.8rem;
+    }
+    .main-title {
+      font-size: 1.6rem;
+    }
+    .button {
+      font-size: 0.85rem;
+      padding: 0.6rem 1rem;
+    } /* Affects all buttons */
+    .input {
+      font-size: 0.9rem;
+      padding: 0.7rem 0.9rem;
+    } /* Affects all inputs */
+    .url-cell {
+      max-width: 150px;
+      font-size: 0.8rem;
+    } /* Main table */
+    .table th,
+    .table td {
+      padding: 0.5rem 0.6rem;
+    } /* Main table */
+  
+    /* Dialog specific responsive */
+    .search-modal-content .dialogHeader {
+      padding: 1rem;
+      padding-right: 2.5rem;
+    }
+    .search-modal-content .dialog-main-content {
+      padding: 1rem;
+    }
+    .search-modal-content .dialogFooter {
+      padding: 0.75rem 1rem;
+    }
+    .search-modal-content .dialogTitle {
+      font-size: 1.1rem;
+    }
+    .search-modal-content .url-cell {
+      max-width: 150px;
+      font-size: 0.75rem;
+    }
+  }
+  

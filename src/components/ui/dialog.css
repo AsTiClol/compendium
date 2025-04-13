@@ -1,53 +1,98 @@
 /* src/components/ui/dialog.css */
+/* Base styles for Radix Dialog - Enhanced */
 
 .fixedOverlay {
   position: fixed; inset: 0; z-index: 50;
-  background-color: rgba(10, 10, 10, 0.7);
-  backdrop-filter: blur(5px);
-  animation: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  background-color: hsl(var(--background) / 0.8); /* Slightly more opaque */
+  backdrop-filter: blur(4px); /* Subtle blur */
+  /* animation: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1); */ /* Keep disabled for stability */
+  opacity: 1; /* Ensure visible */
 }
-@keyframes overlayShow { from { opacity: 0; } to { opacity: 1; } }
+/* @keyframes overlayShow { from { opacity: 0; } to { opacity: 1; } } */
 
 .dialogContent {
   font-family: var(--font-sans);
   position: fixed; left: 50%; top: 50%; z-index: 50;
-  transform: translate(-50%, -50%);
-  width: 90vw; max-width: 55rem; max-height: 90vh;
-  overflow: hidden; display: flex; flex-direction: column; gap: 1.5rem;
-  background-color: hsl(var(--background) / 0.7); /* Darker, less transparent */
-  color: hsl(var(--foreground)); /* White Text */
-  padding: 2rem; border-radius: var(--radius);
+  transform: translate(-50%, -50%) scale(1);
+  width: 90vw; max-width: 55rem; /* Max width */
+  max-height: 85vh; /* Slightly less max height */
+  overflow: hidden; /* Important for layout */
+  display: flex; flex-direction: column; /* Use flex column */
+  gap: 0; /* Remove base gap, control spacing internally */
+  background-color: hsl(var(--background)); /* Use solid background */
+  color: hsl(var(--foreground));
+  /* Increased padding for more breathing room */
+  padding: 0; /* Remove base padding, apply to inner sections */
+  border-radius: calc(var(--radius) + 4px); /* Slightly larger radius */
   border: 1px solid hsl(var(--border));
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
-  animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4); /* Enhanced shadow */
+  /* backdrop-filter: blur(10px); */ /* Keep disabled for stability */
+  /* animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1); */ /* Keep disabled for stability */
+  opacity: 1; /* Ensure visible */
 }
-@keyframes contentShow { from { opacity: 0; transform: translate(-50%,-48%) scale(0.96); } to { opacity: 1; transform: translate(-50%,-50%) scale(1); } }
+/* @keyframes contentShow { from { opacity: 0; transform: translate(-50%,-48%) scale(0.96); } to { opacity: 1; transform: translate(-50%,-50%) scale(1); } } */
 
-/* Close Button */
+/* Close Button - positioned relative to DialogContent */
 .dialogCloseButton {
-  position: absolute; right: 1rem; top: 1rem; border-radius: 50%;
-  width: 2.25rem; height: 2.25rem; display: inline-flex; align-items: center;
-  justify-content: center; color: hsl(var(--muted-foreground));
-  background-color: transparent; border: 1px solid transparent;
+  position: absolute; right: 0.75rem; top: 0.75rem; z-index: 51; /* Ensure above content */
+  border-radius: 50%;
+  width: 2rem; height: 2rem; /* Slightly smaller */
+  display: inline-flex; align-items: center; justify-content: center;
+  color: hsl(var(--muted-foreground));
+  background-color: transparent; border: none; /* No border needed */
   cursor: pointer; transition: all 0.2s ease;
 }
-.dialogCloseButton:hover { background-color: hsl(var(--border) / 0.5); color: hsl(var(--foreground)); transform: scale(1.1); border-color: hsl(var(--border));}
-.dialogCloseButton:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--accent)); border-color: hsl(var(--accent));}
-.dialogCloseButton > svg { width: 1rem; height: 1rem; }
+.dialogCloseButton:hover { background-color: hsl(var(--border) / 0.6); color: hsl(var(--foreground)); transform: scale(1.05); }
+.dialogCloseButton:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--accent)); }
+.dialogCloseButton > svg { width: 0.9rem; height: 0.9rem; } /* Smaller icon */
 
-/* Header, Footer, Title, Description */
-.dialogHeader { display: flex; flex-direction: column; gap: 0.5rem; padding-right: 2.5rem; flex-shrink: 0; }
-.dialogFooter { display: flex; flex-direction: column-reverse; gap: 0.75rem; margin-top: auto; padding-top: 1rem; border-top: 1px solid hsl(var(--border) / 0.5); flex-shrink: 0; }
-@media (min-width: 640px) { .dialogFooter { flex-direction: row; justify-content: flex-end; } }
-.dialogTitle { font-size: 1.4rem; line-height: 1.4; font-weight: 600; color: hsl(var(--foreground)); }
-.dialogDescription { font-size: 0.95rem; color: hsl(var(--muted-foreground)); line-height: 1.6; }
-
-/* Content Area for Scrolling */
-.dialog-main-content {
-    flex-grow: 1; overflow-y: auto; overflow-x: hidden;
-    margin: -0.5rem -2rem; padding: 0.5rem 2rem;
+/* Header - Added padding and border */
+.dialogHeader {
+  padding: 1.25rem 1.5rem; /* Add padding */
+  padding-right: 3rem; /* More padding on right for close button */
+  flex-shrink: 0; /* Prevent shrinking */
+  border-bottom: 1px solid hsl(var(--border)); /* Separator line */
+  display: flex; flex-direction: column; gap: 0.25rem; /* Reduced gap */
 }
+
+/* Footer - Added padding and border */
+.dialogFooter {
+  display: flex; flex-direction: column-reverse; /* Stack on mobile */
+  gap: 0.75rem;
+  padding: 1rem 1.5rem; /* Add padding */
+  border-top: 1px solid hsl(var(--border)); /* Separator line */
+  flex-shrink: 0; /* Prevent shrinking */
+  background-color: hsl(var(--muted) / 0.2); /* Subtle bg */
+}
+/* Align right on larger screens */
+@media (min-width: 640px) {
+  .dialogFooter { flex-direction: row; justify-content: flex-end; }
+}
+
+/* Title - Slightly adjusted */
+.dialogTitle {
+  font-size: 1.25rem; /* Slightly smaller */
+  line-height: 1.4;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+/* Description - Basic styling */
+.dialogDescription {
+  font-size: 0.9rem; /* Slightly smaller */
+  color: hsl(var(--muted-foreground));
+  line-height: 1.6;
+  margin-top: 0.25rem;
+}
+
+/* Main Content Area - Manages scrolling */
+.dialog-main-content {
+  flex-grow: 1; /* Take available space */
+  overflow-y: auto; /* Enable vertical scroll */
+  overflow-x: hidden;
+  padding: 1.5rem; /* Add padding */
+}
+/* Scrollbar styling */
 .dialog-main-content::-webkit-scrollbar { width: 6px; }
 .dialog-main-content::-webkit-scrollbar-track { background: transparent; }
 .dialog-main-content::-webkit-scrollbar-thumb { background-color: hsl(var(--border)); border-radius: 3px; }
