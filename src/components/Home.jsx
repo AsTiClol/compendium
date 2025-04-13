@@ -102,11 +102,12 @@ function Home() {
       const { matches } = response.data;
       if (matches.length === 0) { setSearchResults([]); }
       else {
-        const { data: linkDetails, error: fetchErr } = await supabase.from('links').select('id, url, summary, created_at').in('id', matches);
+        const matchIds = matches.map(id => typeof id === 'object' ? id.id : id);
+        const { data: linkDetails, error: fetchErr } = await supabase.from('links').select('id, url, summary, created_at').in('id', matchIds);
         if (fetchErr) throw new Error(`DB fetch error: ${fetchErr.message}`);
         if (linkDetails?.length > 0) {
           const detailsMap = new Map(linkDetails.map(link => [link.id, link]));
-          const sortedResults = matches.map(id => detailsMap.get(id)).filter(Boolean);
+          const sortedResults = matchIds.map(id => detailsMap.get(id)).filter(Boolean);
           setSearchResults(sortedResults);
         } else { setSearchResults([]); }
       }
