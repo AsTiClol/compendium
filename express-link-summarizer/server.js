@@ -218,22 +218,13 @@ function euclideanDistance(vec1, vec2) {
 // --- Express Application Setup ---
 const app = express();
 
-// CORS Middleware Configuration
-const allowedOrigins = ["*"];
-const corsOptions = {
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            logger.warn(`CORS: Blocked origin - ${origin}`);
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+// CORS Middleware Configuration - Allow all origins
+app.use(cors({
+    origin: '*', // Allow all origins
     credentials: true,
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-};
-app.use(cors(corsOptions));
+}));
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
